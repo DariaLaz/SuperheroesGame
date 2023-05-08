@@ -75,6 +75,9 @@ public:
 	//Clear content
 	void clear() noexcept;
 
+	bool constains(const T& value) const;
+
+
 	//RELATIONAL OPERATIONS
 	friend bool operator==(const vector<T>& lhs, const vector<T>& rhs);
 	friend bool operator!=(const vector<T>& lhs, const vector<T>& rhs);
@@ -357,9 +360,9 @@ template<typename T> void vector<T>::swap(vector<T>& other) {
 }
 template<typename T> void vector<T>::clear() noexcept {
 	_size = 0;
-	_capacity = DEF_CAPACITY;
+	_capacity = VectorConstants::DEF_CAPACITY;
 	delete[] _arr;
-	_arr = new T[DEF_CAPACITY];
+	_arr = new T[VectorConstants::DEF_CAPACITY];
 }
 
 //RELATIONAL OPERATIONS
@@ -429,4 +432,16 @@ template<typename T> void vector<T>::moveFrom(vector<T>&& other) {
 template<typename T> void vector<T>::free() {
 	delete[] _arr;
 	_size = 0;
+}
+
+
+template<typename T> bool vector<T>::constains(const T& value) const {
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (_arr[i] == value)
+		{
+			return true;
+		}
+	}
+	return false;
 }
