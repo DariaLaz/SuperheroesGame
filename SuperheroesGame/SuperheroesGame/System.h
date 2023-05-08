@@ -56,12 +56,12 @@ public:
 	void printAll() const; 
 	void results() const; 
 	void printMarket() const;
-	//Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, ако не желае да добавя нов.
-	//Всеки играч трябва да може да вижда пазара от супергерои (който е общ за всички играчи) и при желание да закупи някой супергерой. След закупуването супергероят трябва да изчезне от пазара. Не е позволено дублиране на един и същ супергерой, както като собственост на един играч така и като дублиране между различни играчи.
-	void attack(const String& nickname);
-	void attack(const char* nickname); //Всеки играч трябва да може да нападне избран от него супергерой на даден потребител.
+	void buy(const String& nickname);
+	void buy(const char* nickname);
+	int attack(const String& nickname, const String& userNickname, const String& heroNickname);
+	int attack(const char* attackerNickname, const char* userNickname, const char* heroNickname);
 	void changeMode(const String& nickname, const Mode& mode);
-	void changeMode(const char* nickname, const Mode& mode);//Всеки играч трябва да може да променя позицията на героите си от атакуваща в дефанзивна и обратното.
+	void changeMode(const char* nickname, const Mode& mode);
 
 
 	void login();
@@ -76,6 +76,10 @@ private:
 
 	int findPlayer(const String& nickname) const;
 	int findAdmin(const String& nickname) const;
+	int findSuperhero(const String& nickname) const;
+	int findSuperhero(const char* nickname) const;
+
+	int comparePower(const Power& pow1, const Power& pow2) const; // 0 ==, -1 <, 1 >
 
 	void adminCheck() const;
 	void userCheck() const;

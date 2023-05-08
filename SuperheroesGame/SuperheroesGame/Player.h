@@ -4,6 +4,7 @@ class Player : public User
 {
 	double _money;
 	vector<Superhero*> superheroes;
+	Superhero* _main = nullptr;
 public:
 	Player() = default;
 	Player(const String& firstName,
@@ -17,9 +18,18 @@ public:
 		const char* nickname,
 		double money);
 	double money() const;
+	size_t find(const char*) const;
+	Superhero* getAt(size_t);
+	Superhero* main();
+
 
 	void print(bool isAdmin = false) const override;
 	void changeMode(const String& nickname, const Mode& mode);
 	void changeMode(const char* nickname, const Mode& mode);
+	void addSuperhero(Superhero* superhero); //-money, mode
+	void loseMoney(double money);
+	void winMoney(double money);
+
+	void removeSuperhero(Superhero* superhero);
 };
 

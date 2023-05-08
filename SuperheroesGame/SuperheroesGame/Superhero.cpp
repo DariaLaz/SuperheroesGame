@@ -54,3 +54,58 @@ Mode Superhero::mode() const {
 bool Superhero::isUnique(const String& nickname) const {
 	return nicknames.constains(nickname);
 }
+
+int Superhero::attack(Superhero* other) {
+	size_t attackerPoints = strenght();
+	size_t defenderPoints = other->strenght();
+
+	int cmp = comparePower(power(), other->power());
+
+	if (cmp < 0)
+	{
+		defenderPoints *= 2;
+	}
+	else if (cmp > 0)
+	{
+		attackerPoints *= 2;
+	}
+
+	if (attackerPoints > defenderPoints)
+	{
+		size_t diff = abs((int)(strenght() - other->strenght()));
+		if (other->mode() == Mode::defence)
+		{
+			return 0;
+		}
+		owner->winModey(diff);
+		other->owner->loseMoney(diff);
+		return diff;
+	}
+	else if (attackerPoints == defenderPoints)
+	{
+		//k
+		size_t lose = rand() % strenght();
+		owner->loseMoney(lose);
+		return -lose;
+	}
+	else
+	{
+		size_t diff = abs((int)(strenght() - strenght()));
+
+		//z
+		owner->loseMoney(diff);
+		other->owner->winMoney((rand() % (2 * diff)) + diff);
+
+		return -diff;
+	}
+}
+
+int Superhero::comparePower(const Power& pow1, const Power& pow2) const {
+	if ((pow1 == Power::fire && pow2 == Power::earth)
+		|| (pow1 == Power::earth && pow2 == Power::water)
+		|| (pow1 == Power::water && pow2 == Power::fire))
+	{
+		return -1;
+	}
+	return 1;
+}

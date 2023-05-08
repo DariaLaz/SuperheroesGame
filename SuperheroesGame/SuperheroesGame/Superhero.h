@@ -14,7 +14,7 @@ class Superhero
 	size_t _strenght;
 	double _price;
 	Mode _mode;
-	
+	Player* owner = nullptr;
 
 	static vector<String> nicknames;
 public:
@@ -41,10 +41,10 @@ public:
 	Mode mode() const;
 
 	void print(bool isAdmin) const;
-	
+	int attack(Superhero* other); //0 - tie, -1 lose, 1 win
 private:
 	bool isUnique(const String& nickname) const;
-	
+	int comparePower(const Power& pow1, const Power& pow2) const
 
 };
 

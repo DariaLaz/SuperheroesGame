@@ -166,6 +166,53 @@ void System::changeMode(const char* nickname, const Mode& mode) {
 	playerCheck();
 	((Player*)current)->changeMode(nickname, mode);
 }
+void System::buy(const String& nickname) {
+	buy(nickname.c_str());
+}
+void System::buy(const char* nickname) {
+	playerCheck();
+	int idx = findSuperhero(nickname);
+	if (idx < 0 || _market[idx].mode() != Mode::notBought)
+	{
+		throw std::out_of_range("Invalid nickname!");
+	}
+	((Player*)current)->addSuperhero(&_market[idx]);
+}
+//Всеки играч трябва да може да нападне избран от него супергерой на даден потребител.
+int System::attack(const String& nickname, const String& userNickname, const String& heroNickname) {
+	return attack(nickname.c_str(), userNickname.c_str(), heroNickname.c_str());
+}
+int System::attack(const char* attackerNickname, const char* userNickname, const char* heroNickname) {
+	playerCheck();
+	int attakerIdx = ((Player*)current)->find(userNickname);
+	if (attakerIdx < 0)
+	{
+		throw std::out_of_range("Invalid nickname!");
+	}
+	Superhero* attacker = ((Player*)current)->getAt(attakerIdx);
+	int userIdx = findPlayer(userNickname);
+	if (userIdx < 0)
+	{
+		throw std::out_of_range("Invalid nickname!");
+	}
+	int heroIdx = _players[userIdx].find(heroNickname);
+	if (userIdx < 0)
+	{
+		throw std::out_of_range("Invalid nickname!");
+	}
+	Superhero& defender = *_players[userIdx].getAt(heroIdx);
+
+	int result = attacker->attack(&defender);
+	if (result < 0)
+	{
+		((Player*)current)->removeSuperhero(attacker);
+	}
+	else
+	{
+		_players[userIdx].removeSuperhero(&defender);
+	}
+	return result;
+}
 
 
 
