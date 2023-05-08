@@ -217,6 +217,58 @@ int System::attack(const char* attackerNickname, const char* userNickname, const
 
 
 
+
+
+void System::deletePlayerAt(size_t idx) {
+	_players.erase(idx);
+}
+void System::deleteAdminAt(size_t idx) {
+	_admins.erase(idx);
+}
+
+int System::findPlayer(const String& nickname) const {
+	for (size_t i = 0; i < _players.size(); i++)
+	{
+		if (_players[i].nickname() == nickname)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+int System::findAdmin(const String& nickname) const {
+	for (size_t i = 0; i < _admins.size(); i++)
+	{
+		if (_admins[i].nickname() == nickname)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+int System::findSuperhero(const String& nickname) const {
+	for (size_t i = 0; i < _market.size(); i++)
+	{
+		if (_market[i].nickname() == nickname)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+int System::findSuperhero(const char* nickname) const {
+	for (size_t i = 0; i < _market.size(); i++)
+	{
+		if (strcmp(_market[i].nickname().c_str(), nickname) == 0)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+
 void System::userCheck() const {
 	if (!current)
 	{
