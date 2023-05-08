@@ -2,6 +2,8 @@
 #include "String.h"
 #include "Power.h"
 #include "Mode.h"
+#include "vector.hpp"
+
 
 class Superhero
 {
@@ -15,6 +17,20 @@ class Superhero
 
 	static vector<String> nicknames;
 public:
+	Superhero(const String& firstName,
+			  const String& lastName,
+			  const String& nickname,
+			  const Power& power,
+			  size_t strenght,
+			  double price,
+			  const Mode& mode = Mode::notBought);
+	Superhero(const char* firstName,
+			  const char* lastName,
+			  const char* nickname,
+			  const Power& power,
+			  size_t strenght,
+			  double price,
+			  const Mode& mode = Mode::notBought);
 	const String& firstName() const;
 	const String& lastName() const;
 	const String& nickname() const;
@@ -22,5 +38,8 @@ public:
 	size_t strenght() const;
 	double price() const;
 	Mode mode() const;
+private:
+	bool isUnique(const String& nickname) const;
+
 };
 
