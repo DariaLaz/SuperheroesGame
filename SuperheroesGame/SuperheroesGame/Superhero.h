@@ -14,6 +14,7 @@ class Superhero
 	size_t _strenght;
 	double _price;
 	Mode _mode;
+	
 
 	static vector<String> nicknames;
 public:
@@ -40,8 +41,10 @@ public:
 	Mode mode() const;
 
 	void print(bool isAdmin) const;
+	
 private:
 	bool isUnique(const String& nickname) const;
+	
 
 };
 

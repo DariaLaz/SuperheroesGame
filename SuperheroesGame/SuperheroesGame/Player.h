@@ -3,6 +3,7 @@
 class Player : public User
 {
 	double _money;
+	vector<Superhero*> superheroes;
 public:
 	Player() = default;
 	Player(const String& firstName,
@@ -18,5 +19,7 @@ public:
 	double money() const;
 
 	void print(bool isAdmin = false) const override;
+	void changeMode(const String& nickname, const Mode& mode);
+	void changeMode(const char* nickname, const Mode& mode);
 };
 
