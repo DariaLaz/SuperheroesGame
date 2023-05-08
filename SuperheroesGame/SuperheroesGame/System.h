@@ -10,7 +10,7 @@ class System
 	vector<Player> _players;
 	vector<Superhero> _market;
 	bool isAdmin;
-	User current;
+	User* current = nullptr;
 public:
 	System();
 
@@ -36,25 +36,24 @@ public:
 				   const String& lastName,
 				   const String& nickname,
 				   const String& password,
-				   double money);//Всеки администратор трябва да може да добавя нови администратори и играчи в системата.
-	void deletePlayer(const String& nickname);
-	void deletePlayer(const char* nickname); //Всеки администратор трябва да може да изтрива профили на играчи.
+				   double money);
+	void deletePlayer(const String& nickname); 
 	void printInfo(const String& nickname) const;
-	void printInfo(const char* nickname) const;
-	//Всеки администратор трябва да има права да вижда цялата информацията за всеки потребител и неговия прогрес(без администраторите, един администратор може да вижда само имената и имейла на друг администратор) .
 	void addToMarket(const Superhero& superhero);
+	void addToMarket(Superhero&& superhero);
 	void addToMarket(const String& firstName,
 					 const String& lastName,
+					 const String& _nickname,
 					 const Power& power,
 					 size_t strenght,
 					 double price = 0.0, 
 					 Mode mode = Mode::notBought);
-	//Всеки администратор трябва да може да добавя нови супергерои към “пазара”. В случай, че на “пазара” няма никакви супергерои, администраторът още с влизането си трябва да добави поне 3 супергероя. Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, ако не желае да добавя нов.
 	vector<Superhero> market() const;
+	void printMarket() const;
 	
 
 	//player funcs:
-	void deleteMe(); //Всеки играч трябва да може да изтрива профила си.
+	void deleteMe(); 
 	void printAll() const; //prints all players
 	/*Всеки играч трябва да може да вижда списък от всички играчи, 
 		в който са записани само техните потребителски имена, 
@@ -68,9 +67,21 @@ public:
 	void changeMode(const String& nickname, const Mode& mode);
 	void changeMode(const char* nickname, const Mode& mode);//Всеки играч трябва да може да променя позицията на героите си от атакуваща в дефанзивна и обратното.
 
+
+	void login();
 	void logout();
+	void signUp();
 
 
 	static vector<String> nicknames;
+private:
+	void deletePlayerAt(size_t idx);
+	void deleteAdminAt(size_t idx);
+
+	int findPlayer(const String& nickname) const;
+	int findAdmin(const String& nickname) const;
+
+	void adminCheck() const;
+	void userCheck() const;
 };
 

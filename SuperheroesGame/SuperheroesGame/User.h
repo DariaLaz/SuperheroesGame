@@ -23,6 +23,9 @@ public:
 	const String& firstName() const;
 	const String& lastName() const;
 	const String& nickname() const;
+
+	virtual void print(bool isAdmin = false) const;
+
 private:
 	bool isValidPass(const char* password) const;
 	bool isValidPass(const String& password) const;

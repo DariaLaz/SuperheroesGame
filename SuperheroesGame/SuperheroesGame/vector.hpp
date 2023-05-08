@@ -76,7 +76,7 @@ public:
 	void clear() noexcept;
 
 	bool constains(const T& value) const;
-
+	int find(const T& value) const;
 
 	//RELATIONAL OPERATIONS
 	friend bool operator==(const vector<T>& lhs, const vector<T>& rhs);
@@ -444,4 +444,14 @@ template<typename T> bool vector<T>::constains(const T& value) const {
 		}
 	}
 	return false;
+}
+template<typename T> int vector<T>::find(const T& value) const {
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (_arr[i] == value)
+		{
+			return i;
+		}
+	}
+	return -1;
 }

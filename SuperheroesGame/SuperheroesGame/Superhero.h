@@ -38,6 +38,8 @@ public:
 	size_t strenght() const;
 	double price() const;
 	Mode mode() const;
+
+	void print(bool isAdmin) const;
 private:
 	bool isUnique(const String& nickname) const;
 
