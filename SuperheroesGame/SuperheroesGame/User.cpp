@@ -35,7 +35,7 @@ const String& User::firstName() const {
 const String& User::lastName() const{
 	return _lastName;
 }
-const String& User::nickname() const{
+const String& User::username() const{
 	return _nickname;
 }
 
@@ -77,4 +77,8 @@ bool User::isUnique(const char* nickname) const {
 }
 bool User::isUnique(const String& nickname) const {
 	return isUnique(nickname);
+}
+
+bool User::isPass(const String& pass) const {
+	return _password == pass;
 }

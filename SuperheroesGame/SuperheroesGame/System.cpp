@@ -1,4 +1,9 @@
 #include "System.h"
+
+System::System() {
+	addAdmin("Admin", "Admin", "admin", "password");
+}
+
 //ADMIN FUNCTIONS
 //Всеки администратор трябва да може да добавя нови администратори и играчи в системата.
 void System::addAdmin(const User& user) {
@@ -105,7 +110,7 @@ void System::addToMarket(const String& firstName,
 	const String& nickname,
 	const Power& power,
 	size_t strenght,
-	double price = 0.0,
+	double price,
 	Mode mode = Mode::notBought) {
 	adminCheck();
 	Superhero hero(firstName, lastName, nickname, power, strenght, price, mode);
@@ -122,13 +127,13 @@ vector<Superhero> System::market() const {
 //Всеки играч трябва да може да изтрива профила си.
 void System::deleteMe() {
 	userCheck();
-	if (isAdmin)
+	if (_isAdmin)
 	{
-		deleteAdminAt(findAdmin(current->nickname()));
+		deleteAdminAt(findAdmin(current->username()));
 	}
 	else
 	{
-		deletePlayerAt(findPlayer(current->nickname()));
+		deletePlayerAt(findPlayer(current->username()));
 	}
 	current = nullptr;
 }
@@ -138,7 +143,7 @@ void System::printAll() const {
 	userCheck();
 	for (size_t i = 0; i < _players.size(); i++)
 	{
-		_players[i].print(isAdmin);
+		_players[i].print(_isAdmin);
 	}
 } 
 //Всеки играч трябва да може да вижда моментното класиране
@@ -154,7 +159,7 @@ void System::printMarket() const {
 	userCheck();
 	for (size_t i = 0; i < _market.size(); i++)
 	{
-		_market[i].print(isAdmin);
+		_market[i].print(_isAdmin);
 	}
 }
 //Всеки играч трябва да може да променя позицията на героите си от атакуваща в дефанзивна и обратното.
@@ -214,7 +219,35 @@ int System::attack(const char* attackerNickname, const char* userNickname, const
 	return result;
 }
 
+void System::login(const String& username, const String& password) {
+	for (size_t i = 0; i < _admins.size(); i++)
+	{
+		if (_admins[i].username() == username && _admins[i].isPass(password))
+		{
+			_isAdmin = true;
+			current = &_admins[i];
+			return;
+		}
+	}
+	for (size_t i = 0; i < _players.size(); i++)
+	{
+		if (_players[i].username() == username && _players[i].isPass(password))
+		{
+			_isAdmin = false;
+			current = &_players[i];
+			return;
+		}
+	}
+	throw std::logic_error("Invalid username ot password");
+}
 
+void System::logout() {
+	_isAdmin = false;
+	current = nullptr;
+}
+bool System::isLogged() const {
+	return current != nullptr;
+}
 
 
 
@@ -229,7 +262,7 @@ void System::deleteAdminAt(size_t idx) {
 int System::findPlayer(const String& nickname) const {
 	for (size_t i = 0; i < _players.size(); i++)
 	{
-		if (_players[i].nickname() == nickname)
+		if (_players[i].username() == nickname)
 		{
 			return i;
 		}
@@ -239,7 +272,7 @@ int System::findPlayer(const String& nickname) const {
 int System::findAdmin(const String& nickname) const {
 	for (size_t i = 0; i < _admins.size(); i++)
 	{
-		if (_admins[i].nickname() == nickname)
+		if (_admins[i].username() == nickname)
 		{
 			return i;
 		}
@@ -276,13 +309,13 @@ void System::userCheck() const {
 	}
 }
 void System::adminCheck() const {
-	if (!isAdmin)
+	if (!_isAdmin)
 	{
 		throw std::logic_error("Not an admin!");
 	}
 }
 void System::playerCheck() const {
-	if (isAdmin || !current)
+	if (_isAdmin || !current)
 	{
 		throw std::logic_error("Not a player!");
 	}

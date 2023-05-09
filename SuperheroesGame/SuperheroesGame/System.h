@@ -9,11 +9,12 @@ class System
 	vector<User> _admins;
 	vector<Player> _players;
 	vector<Superhero> _market;
-	bool isAdmin;
+	bool _isAdmin;
 	User* current = nullptr;
 public:
 	System();
 
+	bool isLogged() const;
 	//admin funcs:
 	void addAdmin(const User& user);
 	void addAdmin(User&& user);
@@ -58,16 +59,17 @@ public:
 	void printMarket() const;
 	void buy(const String& nickname);
 	void buy(const char* nickname);
-	int attack(const String& nickname, const String& userNickname, const String& heroNickname);
-	int attack(const char* attackerNickname, const char* userNickname, const char* heroNickname);
+	int attack(const String& nickname, const String& userNickname, const String& heroNickname = nullptr);
+	int attack(const char* attackerNickname, const char* userNickname, const char* heroNickname = nullptr);
 	void changeMode(const String& nickname, const Mode& mode);
 	void changeMode(const char* nickname, const Mode& mode);
 
+	bool isAdmin() const;
 
-	void login();
+	void login(const String& nickname, const String& password);
+	void login(String&& nickname, String&& password);
+
 	void logout();
-	void signUp();
-
 
 	static vector<String> nicknames;
 private:
@@ -79,7 +81,6 @@ private:
 	int findSuperhero(const String& nickname) const;
 	int findSuperhero(const char* nickname) const;
 
-	int comparePower(const Power& pow1, const Power& pow2) const; // 0 ==, -1 <, 1 >
 
 	void adminCheck() const;
 	void userCheck() const;

@@ -22,7 +22,9 @@ public:
 		const char* nickname);
 	const String& firstName() const;
 	const String& lastName() const;
-	const String& nickname() const;
+	const String& username() const;
+
+	bool isPass(const String& pass) const;
 
 	virtual void print(bool isAdmin = false) const;
 
