@@ -9,8 +9,10 @@ class User
 	String _nickname;
 	String _password;
 
-	static vector<String> nicknames;
 public:
+	static vector<String> nicknames;
+
+
 	User() = default;
 	User(const String& firstName,
 		const String& lastName,
@@ -31,12 +33,11 @@ public:
 private:
 	bool isValidPass(const char* password) const;
 	bool isValidPass(const String& password) const;
-	bool isValidPass(String&& password) const;
 	bool isUpperCase(char ch) const;
 	bool isDownCase(char ch) const;
 	bool isDigit(char ch) const;
-	bool isUnique(const char* nickname) const;
+	//bool isUnique(const char* nickname) const;
 	bool isUnique(const String& nickname) const;
-	bool isUnique(String&& nickname) const;
+	//bool isUnique(String&& nickname) const;
 };
 

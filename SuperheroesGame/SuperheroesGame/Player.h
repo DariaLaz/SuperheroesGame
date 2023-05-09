@@ -20,9 +20,8 @@ public:
 		const char* nickname,
 		double money);
 	double money() const;
-	size_t find(const char*) const;
+	int find(const char*) const;
 	Superhero* getAt(size_t);
-	Superhero* main();
 
 
 	void print(bool isAdmin = false) const override;
@@ -34,8 +33,8 @@ public:
 	void loseMoney(double money);
 	void winMoney(double money);
 
-	int findSuperhero(const String& nickname);
-	int findSuperhero(const char* nickname);
+	size_t superheroesCount() const;
+
 
 
 	void removeSuperhero(Superhero* superhero);

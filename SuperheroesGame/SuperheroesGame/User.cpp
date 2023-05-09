@@ -1,6 +1,8 @@
 #include "User.h"
 #include "String.h"
 
+vector<String> User::nicknames(8);
+
 User::User(const String& firstName,
 	const String& lastName,
 	const String& password,
@@ -23,6 +25,7 @@ User::User(const char* firstName,
 		}
 		_password = password;
 		_nickname = nickname;
+		nicknames.push_back(nickname);
 	}
 	catch (const std::logic_error&)
 	{
@@ -72,17 +75,15 @@ bool User::isDigit(char ch) const {
 	return ch >= '0' && ch <= '9';
 }
 
-bool User::isUnique(const char* nickname) const {
-	return nicknames.constains(nickname);
-}
+
 bool User::isUnique(const String& nickname) const {
-	return isUnique(nickname);
+	return !nicknames.constains(nickname);
 }
 
 bool User::isPass(const String& pass) const {
 	return _password == pass;
 }
-void User::print(bool isAdmin = false) const {
+void User::print(bool isAdmin) const {
 	std::cout << "+++" << username() << "+++\n";
 
 	if (isAdmin)

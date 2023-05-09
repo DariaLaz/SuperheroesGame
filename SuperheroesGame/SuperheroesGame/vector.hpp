@@ -8,7 +8,7 @@ class vector
 	size_t _capacity;
 	T* _arr;
 public:
-	vector(size_t capacity = DEF_CAPACITY);
+	vector(size_t capacity = VectorConstants::DEF_CAPACITY);
 	vector(const vector<T>& other);
 	vector(vector<T>&& other);
 	vector<T>& operator=(const vector<T>& other);
@@ -188,7 +188,7 @@ template<typename T> const T& vector<T>::operator[](size_t idx) const {
 	{
 		throw std::out_of_range("Out of range!");
 	}
-	return &_arr[idx];
+	return *&_arr[idx];
 }
 template<typename T> T& vector<T>::operator[](size_t idx) {
 	if (idx >= _size)
