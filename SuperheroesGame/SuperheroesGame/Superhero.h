@@ -3,9 +3,6 @@
 #include "Power.h"
 #include "Mode.h"
 #include "vector.hpp"
-#include "Player.h"
-
-
 
 class Superhero
 {
@@ -16,10 +13,10 @@ class Superhero
 	size_t _strenght;
 	double _price;
 	Mode _mode;
-	Player* _owner = nullptr;
 
 	static vector<String> nicknames;
 public:
+	Superhero() = default;
 	Superhero(const String& firstName,
 			  const String& lastName,
 			  const String& nickname,
@@ -42,15 +39,12 @@ public:
 	double price() const;
 	Mode mode() const;
 
-	Player* owner() const;
-
 	void setMode(const Mode&);
 
 	void print(bool isAdmin) const;
-	int attack(Superhero* other); //0 - tie, -1 lose, 1 win
 private:
 	bool isUnique(const String& nickname) const;
-	int comparePower(const Power& pow1, const Power& pow2) const
+	
 
 };
 

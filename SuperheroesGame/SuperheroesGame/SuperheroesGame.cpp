@@ -15,6 +15,7 @@ int main()
 			{
 				login(system);
 			}
+			menu(system);
 			command(system);
 		}
 		catch (const std::exception& ex)

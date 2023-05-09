@@ -333,6 +333,10 @@ char* String::getData() {
 }
 void String::setData(const char* data) {
 	free();
+	if (!data)
+	{
+		data = "\0";
+	}
 	size_t size = strlen(data);
 	if (size >= StringConstants::BUFF_SIZE)
 	{

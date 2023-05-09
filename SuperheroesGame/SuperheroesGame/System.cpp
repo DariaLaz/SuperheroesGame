@@ -1,7 +1,9 @@
 #include "System.h"
 
 System::System() {
-	addAdmin("Admin", "Admin", "admin", "password");
+	User admin("Admin", "Admin", "Pass1", "admin");
+
+	_admins.push_back(std::move(admin));
 }
 
 //ADMIN FUNCTIONS
@@ -9,10 +11,12 @@ System::System() {
 void System::addAdmin(const User& user) {
 	adminCheck();
 	_admins.push_back(user);
+	User::nicknames.push_back(user.username());
 }
 void System::addAdmin(User&& user) {
 	adminCheck();
 	_admins.push_back(std::move(user));
+	User::nicknames.push_back(user.username());
 }
 void System::addAdmin(const char* firstName,
 	const char* lastName,
@@ -21,6 +25,7 @@ void System::addAdmin(const char* firstName,
 	adminCheck();
 	User user(firstName, lastName, nickname, password);
 	_admins.push_back(std::move(user));
+	User::nicknames.push_back(nickname);
 }
 void System::addAdmin(const String& firstName,
 	const String& lastName,
@@ -30,16 +35,21 @@ void System::addAdmin(const String& firstName,
 
 	User user(firstName, lastName, nickname, password);
 	_admins.push_back(std::move(user));
+	User::nicknames.push_back(nickname);
 }
 void System::addPlayer(const Player& player) {
 	adminCheck();
 
 	_players.push_back(player);
+	User::nicknames.push_back(player.username());
+
 }
 void System::addPlayer(Player&& player) {
 	adminCheck();
 
 	_players.push_back(std::move(player));
+	User::nicknames.push_back(player.username());
+
 }
 void System::addPlayer(const char* firstName,
 	const char* lastName,
@@ -50,6 +60,8 @@ void System::addPlayer(const char* firstName,
 
 	Player player(firstName, lastName, nickname, password, money);
 	_players.push_back(std::move(player));
+	User::nicknames.push_back(player.username());
+
 }
 void System::addPlayer(const String& firstName,
 	const String& lastName,
@@ -60,6 +72,7 @@ void System::addPlayer(const String& firstName,
 
 	Player player(firstName, lastName, nickname, password, money);
 	_players.push_back(std::move(player));
+	User::nicknames.push_back(player.username());
 }
 
 //Всеки администратор трябва да може да изтрива профили на играчи.
@@ -111,7 +124,7 @@ void System::addToMarket(const String& firstName,
 	const Power& power,
 	size_t strenght,
 	double price,
-	Mode mode = Mode::notBought) {
+	Mode mode) {
 	adminCheck();
 	Superhero hero(firstName, lastName, nickname, power, strenght, price, mode);
 	_market.push_back(std::move(hero));
@@ -187,36 +200,67 @@ void System::buy(const char* nickname) {
 int System::attack(const String& nickname, const String& userNickname, const String& heroNickname) {
 	return attack(nickname.c_str(), userNickname.c_str(), heroNickname.c_str());
 }
-int System::attack(const char* attackerNickname, const char* userNickname, const char* heroNickname) {
+int System::attack(const char* attackerNickname, const char* opponentUsername, const char* heroNickname) {
 	playerCheck();
-	int attakerIdx = ((Player*)current)->find(userNickname);
-	if (attakerIdx < 0)
-	{
-		throw std::out_of_range("Invalid nickname!");
-	}
-	Superhero* attacker = ((Player*)current)->getAt(attakerIdx);
-	int userIdx = findPlayer(userNickname);
-	if (userIdx < 0)
-	{
-		throw std::out_of_range("Invalid nickname!");
-	}
-	int heroIdx = _players[userIdx].find(heroNickname);
-	if (userIdx < 0)
-	{
-		throw std::out_of_range("Invalid nickname!");
-	}
-	Superhero& defender = *_players[userIdx].getAt(heroIdx);
+	Player& attacker = *((Player*)current);
 
-	int result = attacker->attack(&defender);
-	if (result < 0)
+	int idx = findPlayer(opponentUsername);
+	if (idx < 0)
 	{
-		((Player*)current)->removeSuperhero(attacker);
+		throw std::out_of_range("Invalid username!");
 	}
-	else
+
+	Player& defender = _players[idx];
+	Superhero& attackHero = *attacker.getAt(attacker.find(attackerNickname));
+
+	if (defender.superheroesCount() == 0)
 	{
-		_players[userIdx].removeSuperhero(&defender);
+		defender.loseMoney(attackHero.strenght());
+		size_t win = rand() % (2 * attackHero.strenght());
+		attacker.winMoney(win);
+
+		return win;
 	}
-	return result;
+
+	Superhero& defendHero = *defender.getAt(defender.find(heroNickname));
+
+	size_t attackerPoints = attackHero.strenght();
+	size_t defenderPoints = defendHero.strenght();
+
+	int cmp = comparePower(attackHero.power(), defendHero.power());
+	if (cmp < 0)
+	{
+		defenderPoints *= 2;
+	}
+	else if (cmp > 0)
+	{
+		attackerPoints *= 2;
+	}
+
+	if (defenderPoints == attackerPoints)
+	{
+		size_t lose = rand() % attackHero.strenght();
+		attacker.loseMoney(lose);
+		return lose * (-1);
+	}
+	else if (defenderPoints < attackerPoints) {
+		size_t diff = attackerPoints - defenderPoints;
+		attacker.winMoney(diff);
+		if (defendHero.mode() == Mode::attack)
+		{
+			defender.loseMoney(diff);
+		}
+		defender.removeSuperhero(&defendHero);
+		return diff;
+	}
+	else if (defenderPoints > attackerPoints)
+	{
+		size_t diff = attackerPoints - defenderPoints;
+		defender.winMoney(rand() % (2*diff));
+		attacker.loseMoney(2 * diff);
+		attacker.removeSuperhero(&attackHero);
+		return diff * (-2);
+	}
 }
 
 void System::login(const String& username, const String& password) {
@@ -248,7 +292,9 @@ void System::logout() {
 bool System::isLogged() const {
 	return current != nullptr;
 }
-
+bool System::isAdmin() const {
+	return _isAdmin;
+}
 
 
 
@@ -319,4 +365,14 @@ void System::playerCheck() const {
 	{
 		throw std::logic_error("Not a player!");
 	}
+}
+
+int System::comparePower(const Power& pow1, const Power& pow2) const {
+	if ((pow1 == Power::fire && pow2 == Power::earth)
+		|| (pow1 == Power::earth && pow2 == Power::water)
+		|| (pow1 == Power::water && pow2 == Power::fire))
+	{
+		return -1;
+	}
+	return 1;
 }

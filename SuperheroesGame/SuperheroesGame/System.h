@@ -67,7 +67,6 @@ public:
 	bool isAdmin() const;
 
 	void login(const String& nickname, const String& password);
-	void login(String&& nickname, String&& password);
 
 	void logout();
 
@@ -85,5 +84,7 @@ private:
 	void adminCheck() const;
 	void userCheck() const;
 	void playerCheck() const;
+
+	int comparePower(const Power& pow1, const Power& pow2) const;
 };
 
