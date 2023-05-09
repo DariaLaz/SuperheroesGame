@@ -55,7 +55,7 @@ Mode Superhero::mode() const {
 }
 
 bool Superhero::isUnique(const String& nickname) const {
-	return nicknames.constains(nickname);
+	return !nicknames.constains(nickname);
 }
 
 
@@ -66,5 +66,8 @@ void Superhero::setMode(const Mode& mode) {
 }
 
 void Superhero::print(bool isAdmin) const {
-
+	if (_mode != Mode::notBought || isAdmin)
+	{
+		std::cout << nickname() << std::endl;
+	}
 }

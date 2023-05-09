@@ -14,14 +14,14 @@ void menu(System& system) {
 				  << "--AddAdmin <firstName> <lastName> <username> <password> \n"
 			      << "--AddPlayer <firstName> <lastName> <username> <password> <money>\n"
 				  << "--DeletePlayer <nickname>\n"
-			      << "--AddToMarket <firstName> <lastName> <nickname> <power> <strenght> <price>\n\n"
+			      << "--AddToMarket <firstName> <lastName> <nickname> <power> <strenght> <price>\n"
 			      << "PERSONAL:\n"
 				  << "--DeleteMe\n"
 				  << "Logout\n";
 	}
 	else
 	{
-		std::cout << "Admin menu: \n"
+		std::cout << "Player menu: \n"
 				  << "PRINT:\n"
 				  << "--Users\n"
 				  << "--Market\n"
@@ -50,11 +50,18 @@ void login(System& system) {
 
 	std::cout << "You successfully logged as " << nickname << std::endl;
 
-	/*while (system.isAdmin() && system.market().size() < 3)
+	while (system.isAdmin() && system.market().size() < 3)
 	{
-		std::cout << "You should add superhero!\n";
-		addSyperhero(system);
-	}*/
+		std::cout << "There are less that 3 superheroes on the market. You should add superhero!\n";
+		try
+		{
+			addSyperhero(system);
+		}
+		catch (const std::exception& ex)
+		{
+			std::cout << ex.what() <<std::endl;
+		}
+	}
 }
 void logout(System& system) {
 	system.logout();

@@ -23,7 +23,7 @@ void System::addAdmin(const char* firstName,
 	const char* nickname,
 	const char* password) {
 	adminCheck();
-	User user(firstName, lastName, nickname, password);
+	User user(firstName, lastName, password, nickname);
 	_admins.push_back(std::move(user));
 	User::nicknames.push_back(nickname);
 }
@@ -33,7 +33,8 @@ void System::addAdmin(const String& firstName,
 	const String& password) {
 	adminCheck();
 
-	User user(firstName, lastName, nickname, password);
+	User user(firstName, lastName, password, nickname);
+
 	_admins.push_back(std::move(user));
 	User::nicknames.push_back(nickname);
 }
@@ -65,14 +66,14 @@ void System::addPlayer(const char* firstName,
 }
 void System::addPlayer(const String& firstName,
 	const String& lastName,
-	const String& nickname,
+	const String& username,
 	const String& password,
 	double money) {
 	adminCheck();
 
-	Player player(firstName, lastName, nickname, password, money);
+	Player player(firstName, lastName, password, username, money);
 	_players.push_back(std::move(player));
-	User::nicknames.push_back(player.username());
+	User::nicknames.push_back(username);
 }
 
 //Всеки администратор трябва да може да изтрива профили на играчи.
@@ -170,6 +171,7 @@ void System::results() const {
 //както като собственост на един играч така и като дублиране между различни играчи.
 void System::printMarket() const {
 	userCheck();
+
 	for (size_t i = 0; i < _market.size(); i++)
 	{
 		_market[i].print(_isAdmin);
