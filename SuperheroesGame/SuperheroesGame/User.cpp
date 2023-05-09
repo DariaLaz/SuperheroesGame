@@ -82,3 +82,11 @@ bool User::isUnique(const String& nickname) const {
 bool User::isPass(const String& pass) const {
 	return _password == pass;
 }
+void User::print(bool isAdmin = false) const {
+	std::cout << "+++" << username() << "+++\n";
+
+	if (isAdmin)
+	{
+
+	}
+}

@@ -109,3 +109,5 @@ int Superhero::comparePower(const Power& pow1, const Power& pow2) const {
 	}
 	return 1;
 }
+
+
