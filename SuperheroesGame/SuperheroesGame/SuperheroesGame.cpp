@@ -5,24 +5,28 @@
 
 int main()
 {
-    System system;
+    Interface inf;
 
-	while (true)
-	{
-		try
-		{
-			if (!system.isLogged())
-			{
-				login(system);
-			}
-			menu(system);
-			command(system);
-		}
-		catch (const std::exception& ex)
-		{
-			std::cout << ex.what();
-			continue;
-		}
-	}
+	
 }
 
+//admin
+//Pass1
+//ss1
+//ss1
+//ss1
+//fire
+//334
+//34
+//ss2
+//ss2
+//ss2
+//water
+//334
+//34
+//ss3
+//ss3
+//ss3
+//earth
+//334
+//34

@@ -3,5 +3,6 @@
 enum class Mode {
 	attack,
 	defence,
-	notBought
+	notBought,
+	dead
 };

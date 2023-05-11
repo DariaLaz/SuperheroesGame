@@ -50,7 +50,6 @@ void System::addPlayer(Player&& player) {
 
 	_players.push_back(std::move(player));
 	User::nicknames.push_back(player.username());
-
 }
 void System::addPlayer(const char* firstName,
 	const char* lastName,
@@ -130,6 +129,21 @@ void System::addToMarket(const String& firstName,
 	Superhero hero(firstName, lastName, nickname, power, strenght, price, mode);
 	_market.push_back(std::move(hero));
 }
+void System::resurrect(const String& nickname) {
+	adminCheck();
+
+	int idx = findSuperhero(nickname);
+	if (idx < 0)
+	{
+		throw std::out_of_range("Invalid nickname!");
+	}
+	if (_market[idx].mode() != Mode::dead)
+	{
+		throw std::logic_error("This superhero already exists!");
+	}
+	_market[idx].setMode(Mode::notBought);
+}
+
 vector<Superhero> System::market() const {
 	return _market;
 }
@@ -143,6 +157,10 @@ void System::deleteMe() {
 	userCheck();
 	if (_isAdmin)
 	{
+		if (_admins.size() == 1)
+		{
+			throw std::logic_error("You are the only admin and cannot be deleted!");
+		}
 		deleteAdminAt(findAdmin(current->username()));
 	}
 	else
@@ -171,10 +189,12 @@ void System::results() const {
 //както като собственост на един играч така и като дублиране между различни играчи.
 void System::printMarket() const {
 	userCheck();
-
 	for (size_t i = 0; i < _market.size(); i++)
 	{
-		_market[i].print(_isAdmin);
+		if (_market[i].mode() == Mode::notBought || (_isAdmin && _market[i].mode() == Mode::dead))
+		{
+			std::cout << _market[i] << std::endl;
+		}
 	}
 }
 //Всеки играч трябва да може да променя позицията на героите си от атакуваща в дефанзивна и обратното.
@@ -252,6 +272,7 @@ int System::attack(const char* attackerNickname, const char* opponentUsername, c
 		{
 			defender.loseMoney(diff);
 		}
+		defendHero.setMode(Mode::dead);
 		defender.removeSuperhero(&defendHero);
 		return diff;
 	}
@@ -260,6 +281,7 @@ int System::attack(const char* attackerNickname, const char* opponentUsername, c
 		size_t diff = attackerPoints - defenderPoints;
 		defender.winMoney(rand() % (2*diff));
 		attacker.loseMoney(2 * diff);
+		attackHero.setMode(Mode::dead);
 		attacker.removeSuperhero(&attackHero);
 		return diff * (-2);
 	}
@@ -297,8 +319,6 @@ bool System::isLogged() const {
 bool System::isAdmin() const {
 	return _isAdmin;
 }
-
-
 
 void System::deletePlayerAt(size_t idx) {
 	_players.erase(idx);
@@ -347,8 +367,6 @@ int System::findSuperhero(const char* nickname) const {
 	}
 	return -1;
 }
-
-
 
 void System::userCheck() const {
 	if (!current)

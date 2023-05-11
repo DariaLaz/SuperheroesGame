@@ -50,6 +50,7 @@ public:
 					 double price = 0.0, 
 					 Mode mode = Mode::notBought);
 	vector<Superhero> market() const;
+	void resurrect(const String& nickname);
 	
 
 	//player funcs:

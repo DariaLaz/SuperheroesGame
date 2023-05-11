@@ -9,10 +9,10 @@ class Superhero
 	String _firstName;
 	String _lastName;
 	String _nickname;
-	Power _power;
+	Power _power = Power::earth;
 	size_t _strenght;
 	double _price;
-	Mode _mode;
+	Mode _mode = Mode::notBought;
 
 	static vector<String> nicknames;
 public:
@@ -41,10 +41,12 @@ public:
 
 	void setMode(const Mode&);
 
-	void print(bool isAdmin) const;
+	//void print() const;
 private:
 	bool isUnique(const String& nickname) const;
 	
 
 };
+String getMode(const Mode& mode);
+std::ostream& operator<<(std::ostream& os, const Superhero& str);
 

@@ -65,9 +65,19 @@ void Superhero::setMode(const Mode& mode) {
 	_mode = mode;
 }
 
-void Superhero::print(bool isAdmin) const {
-	if (_mode != Mode::notBought || isAdmin)
+std::ostream& operator<<(std::ostream& os, const Superhero& sh) {
+	return os << sh.nickname() << getMode(sh.mode());
+}
+
+String getMode(const Mode& mode) {
+	switch (mode)
 	{
-		std::cout << nickname() << std::endl;
+	case Mode::attack: return "ATTACK";
+	case Mode::dead: return "DEAD";
+	case Mode::defence: return "DEFENCE";
+	case Mode::notBought: return "NOT BOUGHT";
+
+	default:
+		break;
 	}
 }
