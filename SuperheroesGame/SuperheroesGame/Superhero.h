@@ -40,8 +40,6 @@ public:
 	Mode mode() const;
 
 	void setMode(const Mode&);
-
-	//void print() const;
 private:
 	bool isUnique(const String& nickname) const;
 	
