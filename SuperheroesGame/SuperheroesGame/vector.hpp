@@ -95,6 +95,13 @@ template <class T>
 void swap(vector<T>& first, vector<T>& second);
 
 template <typename T>
+void swap(T& v1, T& v2) {
+	T temp(v1);
+	v1 = v2;
+	v2 = temp;
+}
+
+template <typename T>
 bool operator==(const vector<T>& lhs, const vector<T>& rhs);
 template <typename T>
 bool operator!=(const vector<T>& lhs, const vector<T>& rhs);

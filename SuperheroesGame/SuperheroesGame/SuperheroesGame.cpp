@@ -7,7 +7,7 @@ int main()
 {
     Interface inf;
 
-	
+	inf.run();
 }
 
 //admin

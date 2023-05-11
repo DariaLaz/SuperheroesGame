@@ -9,10 +9,11 @@ void Interface::run() {
 			{
 				login();
 				clearConsole();
+
 				continue;
 			}
+
 			menu();
-			clearConsole();
 			command();
 		}
 		catch (const std::exception& ex)
@@ -24,42 +25,39 @@ void Interface::run() {
 }
 
 void Interface::menu() {
-	
+	std::cout << "+----------------+" << std::endl;
 	if (_system.isAdmin())
 	{
-		std::cout << "Admin menu: \n"
-				  << "PRINT:\n"
-				  << "--Users\n"
-				  << "--Market\n"
-				  << "--Results\n"
-				  << "--ViewUser <nickname>\n"
-				  << "MODIFY:\n"
-				  << "--AddAdmin <firstName> <lastName> <username> <password> \n"
-			      << "--AddPlayer <firstName> <lastName> <username> <password> <money>\n"
-				  << "--DeletePlayer <nickname>\n"
-			      << "--AddToMarket <firstName> <lastName> <nickname> <power> <strenght> <price>\n"
-				  << "--Resurrect <nickname>"
-			      << "PERSONAL:\n"
-				  << "--DeleteMe\n"
-				  << "Logout\n";
+		std::cout <<"|  ADMIN MENU:   |" << std::endl
+				  <<"|PRINT:          |" << std::endl
+				  <<"| --Users        |" << std::endl
+				  <<"| --Market       |" << std::endl
+				  <<"| --Results      |" << std::endl
+				  <<"| --ViewUser     |" << std::endl
+				  <<"|MODIFY:         |" << std::endl
+				  <<"| --AddAdmin     |" << std::endl
+				  <<"| --AddPlayer    |" << std::endl
+				  <<"| --DeletePlayer |" << std::endl
+				  <<"| --AddToMarket  |" << std::endl
+				  <<"| --Resurrect    |" << std::endl;
 	}
 	else
 	{
-		std::cout << "Player menu: \n"
-				  << "PRINT:\n"
-				  << "--Users\n"
-				  << "--Market\n"
-				  << "--Results\n"
-				  << "--ViewUser <nickname>\n"
-				  << "MODIFY:\n"
-				  << "--Buy <superhero nickname>"
-				  << "--AttackUser <my superhero> <oponent username>\n"
-				  << "--AttackHero <my superhero> <oponent username> <oponenet superhero nickname>\n"
-				  << "--Mode <superhero nickname> <new mode>"
-				  << "PERSONAL:\n"
-				  << "--DeleteMe\n"
-				  << "Logout\n";
+		std::cout << "|  PLAYER MENU:  |" << std::endl
+				  << "|PRINT:          |" << std::endl
+				  << "| --Users        |" << std::endl
+				  << "| --Market       |" << std::endl
+				  << "| --Results      |" << std::endl
+				  << "|MODIFY:         |" << std::endl
+				  << "| --Buy          |" << std::endl
+				  << "| --AttackUser   |" << std::endl
+				  << "| --AttackHero   |" << std::endl
+				  << "| --Mode         |" << std::endl;
 	}
+	std::cout << "|PERSONAL        |" << std::endl
+			  << "| --DeleteMe     |" << std::endl
+			  << "|Logout          |" << std::endl
+			  << "+----------------+" << std::endl;
 }
 void Interface::login() {
 	std::cout << "LOGIN: \n";
@@ -95,65 +93,35 @@ void Interface::command() {
 	String command;
 	std::cout << "Enter command: ";
 	std::cin >> command;
+	clearConsole();
+
 	if (command == "Users")
 	{
-		_system.printAll();
+		users();
 	}
 	else if (command == "Market")
 	{
-		_system.printMarket();
+		market();
 	}
 	else if (command == "Results")
 	{
-		_system.results();
+		results();
 	}
 	else if (command == "ViewUser")
 	{
-		String nickname;
-		std::cout << "Nickname: ";
-		std::cin >> nickname;
-		_system.printInfo(nickname);
+		viewUser();
 	}
 	else if (command == "AddAdmin")
 	{
-		String firstName, lastName, username, password;
-		std::cout << "First name: ";
-		std::cin >> firstName;
-		std::cout << "Last name: ";
-		std::cin >> lastName;
-		std::cout << "Username: ";
-		std::cin >> username;
-		std::cout << "Password: ";
-		std::cin >> password;
-
-		_system.addAdmin(firstName, lastName, username, password);
-		std::cout << "Admin " << username << " created successfully!" << std::endl;
-
+		add(true);
 	}
 	else if (command == "AddPlayer")
 	{
-		String firstName, lastName, username, password;
-		double money;
-		std::cout << "First name: ";
-		std::cin >> firstName;
-		std::cout << "Last name: ";
-		std::cin >> lastName;
-		std::cout << "Username: ";
-		std::cin >> username;
-		std::cout << "Password: ";
-		std::cin >> password;
-		std::cout << "Money: ";
-		std::cin >> money;
-
-		_system.addPlayer(firstName, lastName, username, password, money);
-		std::cout << "Player " << username << " created successfully!" << std::endl;
+		add(false);
 	}
 	else if (command == "DeletePlayer")
 	{
-		String nickname;
-		std::cout << "Nickname: ";
-		std::cin >> nickname;
-		_system.deletePlayer(nickname);
+		deletePlayer();
 	}
 	else if (command == "AddToMarket")
 	{
@@ -173,39 +141,19 @@ void Interface::command() {
 	}
 	else if (command == "Buy")
 	{
-		String nickname;
-		std::cout << "Nickname: ";
-		std::cin >> nickname;
-		_system.buy(nickname);
+		buy();
 	}
 	else if (command == "AttackUser")
 	{
-		String myhero, opponent;
-		std::cout << "My hero nickname: ";
-		std::cin >> myhero;
-		std::cout << "Opponent username: ";
-		std::cin >> opponent;
-
-		_system.attack(myhero, opponent, nullptr);
+		attackUser();
 	}
 	else if (command == "AttackHero")
 	{
-		String myhero, opponentHero;
-		std::cout << "My hero nickname: ";
-		std::cin >> myhero;
-		std::cout << "Opponent hero nickname: ";
-		std::cin >> opponentHero;
-		_system.attack(myhero, nullptr, opponentHero);
+		attackHero();
 	}
 	else if (command == "Mode")
 	{
-		String myhero, mode;
-		std::cout << "My hero nickname: ";
-		std::cin >> myhero;
-		std::cout << "New mode: ";
-		std::cin >> mode;
-
-		_system.changeMode(myhero, getMode(mode));
+		changeMode();
 	}
 	else
 	{
@@ -236,6 +184,89 @@ void Interface::resurrect() {
 	std::cout << "Nickname: ";
 	std::cin >> nickname;
 	_system.resurrect(nickname);
+}
+void Interface::users() const {
+	std::cout << "PLAYERS: " << std::endl;
+	_system.printAll();
+}
+void Interface::market() const {
+	std::cout << "MARKET: " << std::endl;
+	_system.printMarket();
+}
+void Interface::results() {
+	std::cout << "RESULTS: " << std::endl;
+	_system.results();
+}
+void Interface::viewUser() const {
+	String nickname;
+	std::cout << "Nickname: ";
+	std::cin >> nickname;
+	_system.printInfo(nickname);
+}
+void Interface::add(bool isAdmin) {
+	std::cout << "ADD: " << std::endl;
+	String firstName, lastName, username, password;
+	std::cout << "First name: ";
+	std::cin >> firstName;
+	std::cout << "Last name: ";
+	std::cin >> lastName;
+	std::cout << "Username: ";
+	std::cin >> username;
+	std::cout << "Password: ";
+	std::cin >> password;
+	if (isAdmin)
+	{
+		_system.addAdmin(firstName, lastName, username, password);
+		std::cout << "Admin " << username << " created successfully!" << std::endl;
+	}
+	else
+	{
+		double money;
+
+		std::cout << "Money: ";
+		std::cin >> money;
+
+		_system.addPlayer(firstName, lastName, username, password, money);
+		std::cout << "Player " << username << " created successfully!" << std::endl;
+	}
+}
+void Interface::deletePlayer() {
+	String nickname;
+	std::cout << "Nickname: ";
+	std::cin >> nickname;
+	_system.deletePlayer(nickname);
+}
+void Interface::buy() {
+	String nickname;
+	std::cout << "Nickname: ";
+	std::cin >> nickname;
+	_system.buy(nickname);
+}
+void Interface::attackHero() {
+	String myhero, opponentHero;
+	std::cout << "My hero nickname: ";
+	std::cin >> myhero;
+	std::cout << "Opponent hero nickname: ";
+	std::cin >> opponentHero;
+	_system.attack(myhero, nullptr, opponentHero);
+}
+void Interface::attackUser() {
+	String myhero, opponent;
+	std::cout << "My hero nickname: ";
+	std::cin >> myhero;
+	std::cout << "Opponent username: ";
+	std::cin >> opponent;
+
+	_system.attack(myhero, opponent);
+}
+void Interface::changeMode() {
+	String myhero, mode;
+	std::cout << "My hero nickname: ";
+	std::cin >> myhero;
+	std::cout << "New mode: ";
+	std::cin >> mode;
+
+	_system.changeMode(myhero, getMode(mode));
 }
 
 Power getPower(const String& pow) {
@@ -286,3 +317,4 @@ void clearConsole() {
 	std::cout << "\033[;H";
 	std::cout << "\033[J";
 }
+

@@ -15,8 +15,8 @@ void System::addAdmin(const User& user) {
 }
 void System::addAdmin(User&& user) {
 	adminCheck();
-	_admins.push_back(std::move(user));
 	User::nicknames.push_back(user.username());
+	_admins.push_back(std::move(user));
 }
 void System::addAdmin(const char* firstName,
 	const char* lastName,
@@ -47,20 +47,19 @@ void System::addPlayer(const Player& player) {
 }
 void System::addPlayer(Player&& player) {
 	adminCheck();
-
-	_players.push_back(std::move(player));
 	User::nicknames.push_back(player.username());
+	_players.push_back(std::move(player));
 }
 void System::addPlayer(const char* firstName,
 	const char* lastName,
-	const char* nickname,
+	const char* username,
 	const char* password,
 	double money) {
 	adminCheck();
 
-	Player player(firstName, lastName, nickname, password, money);
+	Player player(firstName, lastName, username, password, money);
 	_players.push_back(std::move(player));
-	User::nicknames.push_back(player.username());
+	User::nicknames.push_back(username);
 
 }
 void System::addPlayer(const String& firstName,
@@ -179,8 +178,9 @@ void System::printAll() const {
 	}
 } 
 //¬секи играч тр€бва да може да вижда моментното класиране
-void System::results() const {
-	//todo
+void System::results() {
+	sort();
+	printAll();
 }
 //јдминистраторът тр€бва да може да вижда всички супергерои, които са били продадени и да може да избере един от т€х за добав€не, 
 //ако не желае да добав€ нов.
@@ -189,11 +189,12 @@ void System::results() const {
 //както като собственост на един играч така и като дублиране между различни играчи.
 void System::printMarket() const {
 	userCheck();
+
 	for (size_t i = 0; i < _market.size(); i++)
 	{
 		if (_market[i].mode() == Mode::notBought || (_isAdmin && _market[i].mode() == Mode::dead))
 		{
-			std::cout << _market[i] << std::endl;
+			std::cout << " -> " << _market[i] << std::endl;
 		}
 	}
 }
@@ -220,36 +221,68 @@ void System::buy(const char* nickname) {
 }
 //¬секи играч тр€бва да може да нападне избран от него супергерой на даден потребител.
 int System::attack(const String& nickname, const String& userNickname, const String& heroNickname) {
-	return attack(nickname.c_str(), userNickname.c_str(), heroNickname.c_str());
-}
-int System::attack(const char* attackerNickname, const char* opponentUsername, const char* heroNickname) {
 	playerCheck();
 	Player& attacker = *((Player*)current);
-
-	int idx = findPlayer(opponentUsername);
-	if (idx < 0)
+	Player* defender = nullptr;
+	
+	if (userNickname == nullptr)
 	{
-		throw std::out_of_range("Invalid username!");
+		size_t superheroIdx = findSuperhero(heroNickname);
+		if (superheroIdx == -1)
+		{
+			throw std::out_of_range("Invalid nickname!");
+		}
+		if (_market[superheroIdx].mode() == Mode::notBought || _market[superheroIdx].mode() == Mode::dead)
+		{
+			throw std::logic_error("Invalid nickname!");
+		}
+		for (size_t i = 0; i < _players.size(); i++)
+		{
+			size_t currSize = _players[i].superheroesCount();
+			for (size_t j = 0; j < currSize; j++)
+			{
+				if (_players[i].getAt(j) == &_market[superheroIdx])
+				{
+					defender = &_players[i];
+					break;
+				}
+			}
+			if (defender != nullptr)
+			{
+				break;
+			}
+		}
 	}
-
-	Player& defender = _players[idx];
-	Superhero& attackHero = *attacker.getAt(attacker.find(attackerNickname));
-
-	if (defender.superheroesCount() == 0)
+	else
 	{
-		defender.loseMoney(attackHero.strenght());
+		int idx = findPlayer(userNickname);
+		if (idx < 0)
+		{
+			throw std::out_of_range("Invalid username!");
+		}
+		defender = &_players[idx];
+	}
+	Superhero& attackHero = *attacker.getAt(attacker.find(nickname));
+
+	if (defender->superheroesCount() == 0)
+	{
+		defender->loseMoney(attackHero.strenght());
 		size_t win = rand() % (2 * attackHero.strenght());
 		attacker.winMoney(win);
 
 		return win;
 	}
-
-	Superhero& defendHero = *defender.getAt(defender.find(heroNickname));
+	Superhero* defendHero = nullptr;
+	if (heroNickname == nullptr)
+	{
+		defendHero = defender->getAt(rand() % defender->superheroesCount());
+	}
+	defendHero = defender->getAt(defender->find(heroNickname));
 
 	size_t attackerPoints = attackHero.strenght();
-	size_t defenderPoints = defendHero.strenght();
+	size_t defenderPoints = defendHero->strenght();
 
-	int cmp = comparePower(attackHero.power(), defendHero.power());
+	int cmp = comparePower(attackHero.power(), defendHero->power());
 	if (cmp < 0)
 	{
 		defenderPoints *= 2;
@@ -268,18 +301,18 @@ int System::attack(const char* attackerNickname, const char* opponentUsername, c
 	else if (defenderPoints < attackerPoints) {
 		size_t diff = attackerPoints - defenderPoints;
 		attacker.winMoney(diff);
-		if (defendHero.mode() == Mode::attack)
+		if (defendHero->mode() == Mode::attack)
 		{
-			defender.loseMoney(diff);
+			defender->loseMoney(diff);
 		}
-		defendHero.setMode(Mode::dead);
-		defender.removeSuperhero(&defendHero);
+		defendHero->setMode(Mode::dead);
+		defender->removeSuperhero(defendHero);
 		return diff;
 	}
 	else if (defenderPoints > attackerPoints)
 	{
 		size_t diff = attackerPoints - defenderPoints;
-		defender.winMoney(rand() % (2*diff));
+		defender->winMoney(rand() % (2 * diff));
 		attacker.loseMoney(2 * diff);
 		attackHero.setMode(Mode::dead);
 		attacker.removeSuperhero(&attackHero);
@@ -366,6 +399,25 @@ int System::findSuperhero(const char* nickname) const {
 		}
 	}
 	return -1;
+}
+
+void System::sort() {
+	size_t size = _players.size();
+	for (size_t i = 0; i < size; i++)
+	{
+		size_t maxIndex = i;
+		for (size_t j = i; j < size; j++)
+		{
+			if (_players[maxIndex].money() < _players[j].money())
+			{
+				maxIndex = j;
+			}
+		}
+		if (maxIndex != i)
+		{
+			swap(_players[i], _players[maxIndex]);
+		}
+	}
 }
 
 void System::userCheck() const {

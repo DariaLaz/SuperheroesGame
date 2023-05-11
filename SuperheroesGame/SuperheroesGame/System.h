@@ -56,12 +56,11 @@ public:
 	//player funcs:
 	void deleteMe(); 
 	void printAll() const; 
-	void results() const; 
+	void results(); 
 	void printMarket() const;
 	void buy(const String& nickname);
 	void buy(const char* nickname);
 	int attack(const String& nickname, const String& userNickname, const String& heroNickname = nullptr);
-	int attack(const char* attackerNickname, const char* userNickname, const char* heroNickname = nullptr);
 	void changeMode(const String& nickname, const Mode& mode);
 	void changeMode(const char* nickname, const Mode& mode);
 
@@ -81,11 +80,12 @@ private:
 	int findSuperhero(const String& nickname) const;
 	int findSuperhero(const char* nickname) const;
 
-
 	void adminCheck() const;
 	void userCheck() const;
 	void playerCheck() const;
 
 	int comparePower(const Power& pow1, const Power& pow2) const;
+
+	void sort();
 };
 

@@ -66,7 +66,7 @@ void Superhero::setMode(const Mode& mode) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Superhero& sh) {
-	return os << sh.nickname() << getMode(sh.mode());
+	return os << sh.nickname() << " - " << getMode(sh.mode());
 }
 
 String getMode(const Mode& mode) {

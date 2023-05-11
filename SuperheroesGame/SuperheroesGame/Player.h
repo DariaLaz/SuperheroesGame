@@ -21,6 +21,7 @@ public:
 		double money);
 	double money() const;
 	int find(const char*) const;
+	int find(const String&) const;
 	Superhero* getAt(size_t);
 
 

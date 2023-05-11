@@ -28,6 +28,16 @@ int Player::find(const char* nickname) const {
 	}
 	return -1;
 }
+int Player::find(const String& nickname) const {
+	for (size_t i = 0; i < superheroes.size(); i++)
+	{
+		if (superheroes[i]->nickname() == nickname)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
 Superhero* Player::getAt(size_t idx) {
 	return superheroes[idx];
 }
