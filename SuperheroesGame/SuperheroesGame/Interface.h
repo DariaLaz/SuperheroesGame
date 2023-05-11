@@ -1,18 +1,21 @@
 #pragma once
 #include "System.h"
 
-void menu(System& system);
-void login(System& system);
-void logout(System& system);
+class Interface {
+	System _system;
+public:
+	void run();
+private:
+	void menu();
+	void login();
+	void command();
+	void addSyperhero();
+	void resurrect();
+	void logout();
+};
+Power getPower(const String& pow);
+Mode getMode(const String& mode);
+String lower(const String& str);
 
-void command(System& system);
-
-String& lower(String& str);
-void addSyperhero(System& system);
-
-Power getPower(String& pow);
-Mode getMode(String& mode);
-
-//personal
-void deleteMe(System& system);
-void logout(System& system);
+//from Georgi Terziev's github
+void clearConsole();

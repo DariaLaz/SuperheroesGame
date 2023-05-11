@@ -1,8 +1,31 @@
 #include "Interface.h"
 
-void menu(System& system) {
+void Interface::run() {
+	while (true)
+	{
+		try
+		{
+			if (!_system.isLogged())
+			{
+				login();
+				clearConsole();
+				continue;
+			}
+			menu();
+			clearConsole();
+			command();
+		}
+		catch (const std::exception& ex)
+		{
+			std::cout << ex.what();
+			continue;
+		}
+	}
+}
+
+void Interface::menu() {
 	
-	if (system.isAdmin())
+	if (_system.isAdmin())
 	{
 		std::cout << "Admin menu: \n"
 				  << "PRINT:\n"
@@ -15,6 +38,7 @@ void menu(System& system) {
 			      << "--AddPlayer <firstName> <lastName> <username> <password> <money>\n"
 				  << "--DeletePlayer <nickname>\n"
 			      << "--AddToMarket <firstName> <lastName> <nickname> <power> <strenght> <price>\n"
+				  << "--Resurrect <nickname>"
 			      << "PERSONAL:\n"
 				  << "--DeleteMe\n"
 				  << "Logout\n";
@@ -37,8 +61,7 @@ void menu(System& system) {
 				  << "Logout\n";
 	}
 }
-
-void login(System& system) {
+void Interface::login() {
 	std::cout << "LOGIN: \n";
 	String nickname, password;
 	std::cout << "Username: ";
@@ -46,16 +69,17 @@ void login(System& system) {
 	std::cout << "\nPassword: ";
 	std::cin >> password;
 
-	system.login(std::move(nickname), std::move(password));
+	_system.login(std::move(nickname), std::move(password));
+
 
 	std::cout << "You successfully logged as " << nickname << std::endl;
 
-	while (system.isAdmin() && system.market().size() < 3)
+	while (_system.isAdmin() && _system.market().size() < 3)
 	{
 		std::cout << "There are less that 3 superheroes on the market. You should add superhero!\n";
 		try
 		{
-			addSyperhero(system);
+			addSyperhero();
 		}
 		catch (const std::exception& ex)
 		{
@@ -63,34 +87,32 @@ void login(System& system) {
 		}
 	}
 }
-void logout(System& system) {
-	system.logout();
+void Interface::logout() {
+	_system.logout();
 	std::cout << "You successfully logged out " << std::endl;
 }
-
-
-void command(System& system) {
+void Interface::command() {
 	String command;
 	std::cout << "Enter command: ";
 	std::cin >> command;
 	if (command == "Users")
 	{
-		system.printAll();
+		_system.printAll();
 	}
 	else if (command == "Market")
 	{
-		system.printMarket();
+		_system.printMarket();
 	}
 	else if (command == "Results")
 	{
-		system.results();
+		_system.results();
 	}
 	else if (command == "ViewUser")
 	{
 		String nickname;
 		std::cout << "Nickname: ";
 		std::cin >> nickname;
-		system.printInfo(nickname);
+		_system.printInfo(nickname);
 	}
 	else if (command == "AddAdmin")
 	{
@@ -104,7 +126,9 @@ void command(System& system) {
 		std::cout << "Password: ";
 		std::cin >> password;
 
-		system.addAdmin(firstName, lastName, username, password);
+		_system.addAdmin(firstName, lastName, username, password);
+		std::cout << "Admin " << username << " created successfully!" << std::endl;
+
 	}
 	else if (command == "AddPlayer")
 	{
@@ -121,33 +145,38 @@ void command(System& system) {
 		std::cout << "Money: ";
 		std::cin >> money;
 
-		system.addPlayer(firstName, lastName, username, password, money);
+		_system.addPlayer(firstName, lastName, username, password, money);
+		std::cout << "Player " << username << " created successfully!" << std::endl;
 	}
 	else if (command == "DeletePlayer")
 	{
 		String nickname;
 		std::cout << "Nickname: ";
 		std::cin >> nickname;
-		system.deletePlayer(nickname);
+		_system.deletePlayer(nickname);
 	}
 	else if (command == "AddToMarket")
 	{
-		addSyperhero(system);
+		addSyperhero();
+	}
+	else if (command == "Resurrect")
+	{
+		resurrect();
 	}
 	else if (command == "DeleteMe")
 	{
-		system.deleteMe();
+		_system.deleteMe();
 	}
 	else if (command == "Logout")
 	{
-		logout(system);
+		logout();
 	}
 	else if (command == "Buy")
 	{
 		String nickname;
 		std::cout << "Nickname: ";
 		std::cin >> nickname;
-		system.buy(nickname);
+		_system.buy(nickname);
 	}
 	else if (command == "AttackUser")
 	{
@@ -157,7 +186,7 @@ void command(System& system) {
 		std::cout << "Opponent username: ";
 		std::cin >> opponent;
 
-		system.attack(myhero, opponent, nullptr);
+		_system.attack(myhero, opponent, nullptr);
 	}
 	else if (command == "AttackHero")
 	{
@@ -166,7 +195,7 @@ void command(System& system) {
 		std::cin >> myhero;
 		std::cout << "Opponent hero nickname: ";
 		std::cin >> opponentHero;
-		system.attack(myhero, nullptr, opponentHero);
+		_system.attack(myhero, nullptr, opponentHero);
 	}
 	else if (command == "Mode")
 	{
@@ -176,18 +205,40 @@ void command(System& system) {
 		std::cout << "New mode: ";
 		std::cin >> mode;
 
-		system.changeMode(myhero, getMode(mode));
+		_system.changeMode(myhero, getMode(mode));
 	}
 	else
 	{
 		throw std::logic_error("Invalid command!");
 	}
 }
+void Interface::addSyperhero() {
+	String firstName, lastName, nickname, power;
+	size_t strenght;
+	double price;
 
+	std::cout << "First name: ";
+	std::cin >> firstName;
+	std::cout << "Last name: ";
+	std::cin >> lastName;
+	std::cout << "Nickname: ";
+	std::cin >> nickname;
+	std::cout << "Power: ";
+	std::cin >> power;
+	std::cout << "Strenght: ";
+	std::cin >> strenght;
+	std::cout << "Price: ";
+	std::cin >> price;
+	_system.addToMarket(firstName, lastName, nickname, getPower(power), strenght, price, Mode::notBought);
+}
+void Interface::resurrect() {
+	String nickname;
+	std::cout << "Nickname: ";
+	std::cin >> nickname;
+	_system.resurrect(nickname);
+}
 
-
-
-Power getPower(String& pow) {
+Power getPower(const String& pow) {
 	if (lower(pow) == "fire")
 	{
 		return Power::fire;
@@ -205,7 +256,7 @@ Power getPower(String& pow) {
 		throw std::logic_error("Invalid power!");
 	}
 }
-Mode getMode(String& mode) {
+Mode getMode(const String& mode) {
 	if (lower(mode) == "attack")
 	{
 		return Mode::attack;
@@ -219,39 +270,19 @@ Mode getMode(String& mode) {
 		throw std::logic_error("Invalid mode!");
 	}
 }
-
-String& lower(String& str) {
+String lower(const String& str) {
+	String result(str);
 	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (str[i] >= 'A'&& str[i] <= 'Z')
+		if (str[i] >= 'A' && str[i] <= 'Z')
 		{
-			str[i] -= ('a' - 'A');
+			result[i] -= ('a' - 'A');
 		}
 	}
-	return str;
+	return result;
 }
-
-void addSyperhero(System& system) {
-	String firstName, lastName, nickname, power;
-	size_t strenght;
-	double price;
-
-	std::cout << "First name: ";
-	std::cin >> firstName;
-	std::cout << "Last name: ";
-	std::cin >> lastName;
-	std::cout << "Nickname: ";
-	std::cin >> nickname;
-	std::cout << "Power: ";
-	std::cin >> power;
-	std::cout << "Strenght: ";
-	std::cin >> strenght;
-	std::cout << "Price: ";
-	std::cin >> price;
-	system.addToMarket(firstName, lastName, nickname, getPower(power), strenght, price, Mode::notBought);
-}
-
-//personal
-void deleteMe(System& system) {
-	system.deleteMe();
+//from Georgi Terziev's github
+void clearConsole() {
+	std::cout << "\033[;H";
+	std::cout << "\033[J";
 }
