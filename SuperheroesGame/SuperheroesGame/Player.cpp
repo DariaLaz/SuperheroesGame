@@ -47,11 +47,11 @@ size_t Player::superheroesCount() const {
 
 
 void Player::print(bool isAdmin) const {
-	std::cout << "+++" << username() << "+++\n";
-	std::cout << "-- ($" << _money << ") --\n";
+	std::cout << "+++" << username() << " ($" << _money << ") " << "+++\n";
+	std::cout << " Superheroes: \n";
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
-		std::cout << "- " << superheroes[i]->nickname() << "\n";
+		superheroes[i]->print(isAdmin);
 	}
 }
 void Player::changeMode(const String& nickname, const Mode& mode) {

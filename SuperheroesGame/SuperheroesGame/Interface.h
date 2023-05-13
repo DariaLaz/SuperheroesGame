@@ -23,7 +23,7 @@ private:
 	void attackHero();
 	void attackUser();
 	void changeMode();
-	void save() const;
+	void exit() const;
 };
 //Power getPower(const String& pow);
 //Mode getMode(const String& mode);

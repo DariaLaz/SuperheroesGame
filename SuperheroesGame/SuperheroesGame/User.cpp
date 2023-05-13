@@ -84,12 +84,7 @@ bool User::isPass(const String& pass) const {
 	return _password == pass;
 }
 void User::print(bool isAdmin) const {
-	std::cout << "+++" << username() << "+++\n";
-
-	if (isAdmin)
-	{
-
-	}
+	std::cout << "+++" << username() << " (admin) " << "+++\n";
 }
 
 void User::writeToBinary(std::ofstream& os) const {

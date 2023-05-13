@@ -2,7 +2,7 @@
 
 System::System() {
 
-	std::ifstream ifs("sys.dat", std::ios::in | std::ios::binary);
+	std::ifstream ifs(FileConstants::FILE_NAME, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
 		throw std::logic_error("Can not open the file!");
 
@@ -179,17 +179,28 @@ void System::deleteMe() {
 }
 /*Всеки играч трябва да може да вижда списък от всички играчи, в който са записани само техните потребителски имена,
 		с колко пари разполагат и какви супергерои имат(без тяхната сила).*/
-void System::printAll() const {
+void System::printPlayers() const {
 	userCheck();
 	for (size_t i = 0; i < _players.size(); i++)
 	{
 		_players[i].print(_isAdmin);
 	}
 } 
+void System::printAdmins() const {
+	userCheck();
+	if (!_isAdmin)
+	{
+		return;
+	}
+	for (size_t i = 0; i < _players.size(); i++)
+	{
+		_admins[i].print();
+	}
+}
 //Всеки играч трябва да може да вижда моментното класиране
 void System::results() {
 	sort();
-	printAll();
+	printPlayers();
 }
 //Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, 
 //ако не желае да добавя нов.
@@ -203,7 +214,7 @@ void System::printMarket() const {
 	{
 		if (_market[i].mode() == Mode::notBought || (_isAdmin && _market[i].mode() == Mode::dead))
 		{
-			_market[i].print();
+			_market[i].print(_isAdmin);
 		}
 	}
 }

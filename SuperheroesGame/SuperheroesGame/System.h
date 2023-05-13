@@ -55,7 +55,8 @@ public:
 
 	//player funcs:
 	void deleteMe(); 
-	void printAll() const; 
+	void printPlayers() const;
+	void printAdmins() const;
 	void results(); 
 	void printMarket() const;
 	void buy(const String& nickname);

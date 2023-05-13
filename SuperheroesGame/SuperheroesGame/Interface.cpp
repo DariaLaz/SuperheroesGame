@@ -18,7 +18,7 @@ void Interface::run() {
 		}
 		catch (const std::exception& ex)
 		{
-			std::cout << ex.what();
+			std::cout << ex.what() << std::endl;
 			continue;
 		}
 	}
@@ -158,11 +158,7 @@ void Interface::command() {
 	}
 	else if (command == "Exit")
 	{
-		std::ofstream ofs("sys.dat", std::ios::out | std::ios::binary);
-		if (!ofs.is_open())
-			throw std::logic_error("Can not open the file!");
-		_system.writeToBinary(ofs);
-		ofs.close();
+		exit();
 	}
 	else
 	{
@@ -196,7 +192,10 @@ void Interface::resurrect() {
 }
 void Interface::users() const {
 	std::cout << "PLAYERS: " << std::endl;
-	_system.printAll();
+	_system.printPlayers();
+	std::cout << "ADMINS: " << std::endl;
+	_system.printAdmins();
+
 }
 void Interface::market() const {
 	std::cout << "MARKET: " << std::endl;
@@ -277,8 +276,12 @@ void Interface::changeMode() {
 
 	_system.changeMode(myhero, getMode(mode));
 }
-void Interface::save() const {
-
+void Interface::exit() const {
+	std::ofstream ofs(FileConstants::FILE_NAME, std::ios::out | std::ios::binary);
+	if (!ofs.is_open())
+		throw std::logic_error("Can not open the file!");
+	_system.writeToBinary(ofs);
+	ofs.close();
 }
 
 

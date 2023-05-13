@@ -40,7 +40,7 @@ public:
 	Mode mode() const;
 
 	void setMode(const Mode&);
-	void print() const;
+	void print(bool isAdmin) const;
 
 	void writeToBinary(std::ofstream& os) const;
 	void readFromBinary(std::ifstream& is);
