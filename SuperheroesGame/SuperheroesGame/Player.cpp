@@ -101,3 +101,18 @@ void Player::removeSuperhero(Superhero* superhero) {
 	}
 	superheroes.erase(idx);
 }
+
+void Player::writeToBinary(std::ofstream& os) const {
+	User::writeToBinary(os);
+	os.write((const char*)&_money, sizeof(double));
+	size_t size = superheroes.size();
+	os.write((const char*)&size, sizeof(size_t));
+	for (size_t i = 0; i < size; i++)
+	{
+		superheroes[i]->nickname().writeToBinary(os);
+	}
+}
+void Player::readFromBinary(std::ifstream& is) {
+	User::readFromBinary(is);
+	is.read((char*)&_money, sizeof(double));
+}

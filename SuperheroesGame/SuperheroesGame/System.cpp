@@ -1,9 +1,18 @@
 #include "System.h"
 
 System::System() {
-	User admin("Admin", "Admin", "Pass1", "admin");
 
-	_admins.push_back(std::move(admin));
+	std::ifstream ifs("sys.dat", std::ios::in | std::ios::binary);
+	if (!ifs.is_open())
+		throw std::logic_error("Can not open the file!");
+
+	readFromBinary(ifs);
+	ifs.close();
+	if (_admins.size() == 0)
+	{
+		User admin("Admin", "Admin", "Pass1", "admin");
+		_admins.push_back(std::move(admin));
+	}
 }
 
 //ADMIN FUNCTIONS
@@ -194,7 +203,7 @@ void System::printMarket() const {
 	{
 		if (_market[i].mode() == Mode::notBought || (_isAdmin && _market[i].mode() == Mode::dead))
 		{
-			std::cout << " -> " << _market[i] << std::endl;
+			_market[i].print();
 		}
 	}
 }
@@ -447,4 +456,70 @@ int System::comparePower(const Power& pow1, const Power& pow2) const {
 		return -1;
 	}
 	return 1;
+}
+
+void System::writeToBinary(std::ofstream& os) const {
+	writeUsersToBinary(_admins.data(), _admins.size(), os);
+
+	size_t size = _market.size();
+	os.write((const char*)&size, sizeof(size_t));
+	for (size_t i = 0; i < size; i++)
+	{
+		_market[i].writeToBinary(os);
+	}
+
+	writeUsersToBinary(_players.data(), _players.size(), os);
+
+}
+void System::readFromBinary(std::ifstream& is) {
+	size_t currentSize = 0;
+	is.read((char*)&currentSize, sizeof(size_t));
+	_admins = vector<User>(currentSize);
+	for (size_t i = 0; i < currentSize; i++)
+	{
+		User user;
+		user.readFromBinary(is);
+		_admins.push_back(std::move(user));
+	}
+
+	is.read((char*)&currentSize, sizeof(size_t));
+	_market = vector<Superhero>(currentSize);
+
+	for (size_t i = 0; i < currentSize; i++)
+	{
+		Superhero superhero;
+		superhero.readFromBinary(is);
+		_market.push_back(std::move(superhero));
+	}
+
+	is.read((char*)&currentSize, sizeof(size_t));
+	_players = vector<Player>(currentSize);
+	for (size_t i = 0; i < currentSize; i++)
+	{
+		Player player;
+		player.readFromBinary(is);
+		_players.push_back(std::move(player));
+
+
+		size_t superheroesSize = 0;
+		is.read((char*)&superheroesSize, sizeof(size_t));
+		for (size_t j = 0; j < superheroesSize; j++)
+		{
+			String currentNickname;
+			currentNickname.readFromBinary(is);
+
+			int idx = findSuperhero(currentNickname);
+			_players[i].addSuperhero(&_market[idx]);
+		}
+	}
+	
+	
+}
+
+void writeUsersToBinary(const User* users, size_t size, std::ofstream& os) {
+	os.write((const char*)&size, sizeof(size_t));
+	for (size_t i = 0; i < size; i++)
+	{
+		users[i].writeToBinary(os);
+	}
 }

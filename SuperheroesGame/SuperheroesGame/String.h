@@ -2,6 +2,8 @@
 #pragma warning(disable: 4996)
 #include "Constants.h"
 #include <iostream>
+#include <fstream>
+
 
 namespace {
 	union Data {
@@ -112,6 +114,8 @@ public:
 
 	bool isSSO() const;
 
+	void writeToBinary(std::ofstream& os) const;
+	void readFromBinary(std::ifstream& is);
 private:
 	void copyFrom(const String& other);
 	void moveFrom(String&& other);
@@ -129,6 +133,7 @@ private:
 	void onSSO(size_t n);
 	void offSSO();
 
+	
 };
 
 String operator+(const String& lhs, const String& rhs);
@@ -145,5 +150,5 @@ bool operator>=(const String& lhs, const String& rhs);
 std::ostream& operator<<(std::ostream& os, const String& str);
 std::istream& operator>>(std::istream& is, String& str);
 
-
 bool areTheSame(const char* main, size_t pos, const char* substr);
+

@@ -71,6 +71,9 @@ public:
 	void logout();
 
 	static vector<String> nicknames;
+
+	void writeToBinary(std::ofstream& os) const;
+	void readFromBinary(std::ifstream& is);
 private:
 	void deletePlayerAt(size_t idx);
 	void deleteAdminAt(size_t idx);
@@ -88,4 +91,5 @@ private:
 
 	void sort();
 };
+void writeUsersToBinary(const User* users, size_t size, std::ofstream& os);
 

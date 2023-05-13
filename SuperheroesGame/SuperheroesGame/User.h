@@ -6,7 +6,7 @@ class User
 {
 	String _firstName;
 	String _lastName;
-	String _nickname;
+	String _username;
 	String _password;
 
 public:
@@ -30,6 +30,8 @@ public:
 
 	virtual void print(bool isAdmin = false) const;
 
+	virtual void writeToBinary(std::ofstream& os) const;
+	virtual void readFromBinary(std::ifstream& is);
 private:
 	bool isValidPass(const char* password) const;
 	bool isValidPass(const String& password) const;

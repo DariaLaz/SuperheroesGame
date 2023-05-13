@@ -6,7 +6,6 @@ class Player : public User
 {
 	double _money;
 	vector<Superhero*> superheroes;
-	Superhero* _main = nullptr;
 public:
 	Player() = default;
 	Player(const String& firstName,
@@ -36,8 +35,9 @@ public:
 
 	size_t superheroesCount() const;
 
-
-
 	void removeSuperhero(Superhero* superhero);
+
+	void writeToBinary(std::ofstream& os) const override;
+	void readFromBinary(std::ifstream& is) override;
 };
 

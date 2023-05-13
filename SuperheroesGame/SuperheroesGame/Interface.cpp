@@ -57,6 +57,7 @@ void Interface::menu() {
 	std::cout << "|PERSONAL        |" << std::endl
 			  << "| --DeleteMe     |" << std::endl
 			  << "|Logout          |" << std::endl
+			  << "|Exit            |" << std::endl
 			  << "+----------------+" << std::endl;
 }
 void Interface::login() {
@@ -154,6 +155,14 @@ void Interface::command() {
 	else if (command == "Mode")
 	{
 		changeMode();
+	}
+	else if (command == "Exit")
+	{
+		std::ofstream ofs("sys.dat", std::ios::out | std::ios::binary);
+		if (!ofs.is_open())
+			throw std::logic_error("Can not open the file!");
+		_system.writeToBinary(ofs);
+		ofs.close();
 	}
 	else
 	{
@@ -268,39 +277,43 @@ void Interface::changeMode() {
 
 	_system.changeMode(myhero, getMode(mode));
 }
+void Interface::save() const {
 
-Power getPower(const String& pow) {
-	if (lower(pow) == "fire")
-	{
-		return Power::fire;
-	}
-	else if (lower(pow) == "water")
-	{
-		return Power::water;
-	}
-	else if (lower(pow) == "earth")
-	{
-		return Power::earth;
-	}
-	else
-	{
-		throw std::logic_error("Invalid power!");
-	}
 }
-Mode getMode(const String& mode) {
-	if (lower(mode) == "attack")
-	{
-		return Mode::attack;
-	}
-	else if (lower(mode) == "defence")
-	{
-		return Mode::defence;
-	}
-	else
-	{
-		throw std::logic_error("Invalid mode!");
-	}
-}
+
+
+//Power getPower(const String& pow) {
+//	if (lower(pow) == "fire")
+//	{
+//		return Power::fire;
+//	}
+//	else if (lower(pow) == "water")
+//	{
+//		return Power::water;
+//	}
+//	else if (lower(pow) == "earth")
+//	{
+//		return Power::earth;
+//	}
+//	else
+//	{
+//		throw std::logic_error("Invalid power!");
+//	}
+//}
+//Mode getMode(const String& mode) {
+//	if (lower(mode) == "attack")
+//	{
+//		return Mode::attack;
+//	}
+//	else if (lower(mode) == "defence")
+//	{
+//		return Mode::defence;
+//	}
+//	else
+//	{
+//		throw std::logic_error("Invalid mode!");
+//	}
+//}
 String lower(const String& str) {
 	String result(str);
 	for (size_t i = 0; i < str.length(); i++)

@@ -414,6 +414,24 @@ bool operator>=(const String& lhs, const String& rhs) {
 	return operator==(lhs, rhs) || operator>(lhs, rhs);
 }
 
+void String::writeToBinary(std::ofstream& os) const {
+	if (!os.is_open())
+		throw std::logic_error("Can not open the file!");
+	size_t size = length();
+	os.write((const char*)&size, sizeof(size_t));
+	os.write(c_str(), size + 1);
+}
+void String::readFromBinary(std::ifstream& is) {
+	if (!is.is_open())
+		throw std::logic_error("Can not open the file!");
+	size_t size = 0;
+	is.read((char*)&size, sizeof(size_t));
+	char* data = new char[size + 1];
+	is.read(data, size + 1);
+	setData(data);
+	delete[] data;
+}
+
 std::ostream& operator<<(std::ostream& os, const String& str) {
 	return os << str.data();
 }

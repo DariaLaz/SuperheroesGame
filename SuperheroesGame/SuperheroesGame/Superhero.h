@@ -40,11 +40,19 @@ public:
 	Mode mode() const;
 
 	void setMode(const Mode&);
+	void print() const;
+
+	void writeToBinary(std::ofstream& os) const;
+	void readFromBinary(std::ifstream& is);
 private:
 	bool isUnique(const String& nickname) const;
 	
 
 };
 String getMode(const Mode& mode);
+String getPower(const Power& pow);
+Mode getMode(const String& mode);
+Power getPower(const String& pow);
+
 std::ostream& operator<<(std::ostream& os, const Superhero& str);
 

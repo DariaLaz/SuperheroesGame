@@ -77,6 +77,7 @@ public:
 
 	bool constains(const T& value) const;
 	int find(const T& value) const;
+	void saveToFile(std::ostream& os);
 
 	//RELATIONAL OPERATIONS
 	friend bool operator==(const vector<T>& lhs, const vector<T>& rhs);
@@ -231,7 +232,7 @@ template<typename T> T& vector<T>::back() {
 	return &_arr[_size - 1];
 }
 template<typename T> const T* vector<T>::data() const {
-	return &_arr;
+	return _arr;
 }
 template<typename T> T* vector<T>::data() {
 	return _arr;
@@ -255,6 +256,10 @@ template<typename T> void vector<T>::assign(size_t n, const T& val) {
 template<typename T> void vector<T>::push_back(const T& element) {
 	if (_size == _capacity)
 	{
+		if (_capacity == 0)
+		{
+			_capacity = 2;
+		}
 		resize(_capacity * 2);
 	}
 	_arr[_size++] = element;
@@ -262,6 +267,10 @@ template<typename T> void vector<T>::push_back(const T& element) {
 template<typename T> void vector<T>::push_back(T&& element) {
 	if (_size == _capacity)
 	{
+		if (_capacity == 0)
+		{
+			_capacity = 2;
+		}
 		resize(_capacity * 2);
 	}
 	_arr[_size++] = std::move(element);
@@ -462,3 +471,4 @@ template<typename T> int vector<T>::find(const T& value) const {
 	}
 	return -1;
 }
+

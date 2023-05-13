@@ -24,7 +24,7 @@ User::User(const char* firstName,
 			throw std::logic_error("Invalid nickname");
 		}
 		_password = password;
-		_nickname = nickname;
+		_username = nickname;
 		nicknames.push_back(nickname);
 	}
 	catch (const std::logic_error&)
@@ -39,7 +39,7 @@ const String& User::lastName() const{
 	return _lastName;
 }
 const String& User::username() const{
-	return _nickname;
+	return _username;
 }
 
 bool User::isValidPass(const char* password) const {
@@ -90,4 +90,23 @@ void User::print(bool isAdmin) const {
 	{
 
 	}
+}
+
+void User::writeToBinary(std::ofstream& os) const {
+	if (!os.is_open())
+		throw std::logic_error("Can not open the file!");
+
+	_firstName.writeToBinary(os);
+	_lastName.writeToBinary(os);
+	_username.writeToBinary(os);
+	_password.writeToBinary(os);
+}
+void User::readFromBinary(std::ifstream& is) {
+	if (!is.is_open())
+		throw std::logic_error("Can not open the file!");
+
+	_firstName.readFromBinary(is);
+	_lastName.readFromBinary(is);
+	_username.readFromBinary(is);
+	_password.readFromBinary(is);
 }

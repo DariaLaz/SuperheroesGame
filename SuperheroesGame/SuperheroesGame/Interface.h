@@ -23,9 +23,10 @@ private:
 	void attackHero();
 	void attackUser();
 	void changeMode();
+	void save() const;
 };
-Power getPower(const String& pow);
-Mode getMode(const String& mode);
+//Power getPower(const String& pow);
+//Mode getMode(const String& mode);
 String lower(const String& str);
 
 //from Georgi Terziev's github
