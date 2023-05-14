@@ -18,7 +18,15 @@ Player::Player(const char* firstName,
 	double money) :User(firstName, lastName, password, nickname) {
 	_money = money;
 }
-int Player::find(const char* nickname) const {
+Player::Player(String&& firstName,
+	String&& lastName,
+	String&& password,
+	String&& nickname,
+	double money) :User(std::move(firstName), std::move(lastName), std::move(password), std::move(nickname)) {
+	_money = money;
+}
+
+int Player::findHero(const char* nickname) const {
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
 		if (superheroes[i]->nickname() == nickname)
@@ -28,7 +36,7 @@ int Player::find(const char* nickname) const {
 	}
 	return -1;
 }
-int Player::find(const String& nickname) const {
+int Player::findHero(const String& nickname) const {
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
 		if (superheroes[i]->nickname() == nickname)
@@ -38,13 +46,13 @@ int Player::find(const String& nickname) const {
 	}
 	return -1;
 }
-Superhero* Player::getAt(size_t idx) {
+
+Superhero* Player::getHeroAt(size_t idx) {
 	return superheroes[idx];
 }
 size_t Player::superheroesCount() const {
 	return superheroes.size();
 }
-
 
 void Player::print(bool isAdmin) const {
 	std::cout << "+++" << username() << " ($" << _money << ") " << "+++\n";
@@ -54,11 +62,12 @@ void Player::print(bool isAdmin) const {
 		superheroes[i]->print(isAdmin);
 	}
 }
+
 void Player::changeMode(const String& nickname, const Mode& mode) {
 	changeMode(nickname.c_str(), mode);
 }
 void Player::changeMode(const char* nickname, const Mode& mode) {
-	int idx = find(nickname);
+	int idx = findHero(nickname);
 	if (idx < 0)
 	{
 		throw std::out_of_range("Invalid nickname!");
@@ -72,7 +81,6 @@ void Player::changeMode(Superhero* superhero, const Mode& mode) {
 	}
 	superhero->setMode(mode);
 }
-
 
 void Player::addSuperhero(Superhero* superhero) {
 	superhero->setMode(Mode::defence);

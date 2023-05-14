@@ -20,11 +20,9 @@ System::System() {
 void System::addAdmin(const User& user) {
 	adminCheck();
 	_admins.push_back(user);
-	User::nicknames.push_back(user.username());
 }
 void System::addAdmin(User&& user) {
 	adminCheck();
-	User::nicknames.push_back(user.username());
 	_admins.push_back(std::move(user));
 }
 void System::addAdmin(const char* firstName,
@@ -34,7 +32,6 @@ void System::addAdmin(const char* firstName,
 	adminCheck();
 	User user(firstName, lastName, password, nickname);
 	_admins.push_back(std::move(user));
-	User::nicknames.push_back(nickname);
 }
 void System::addAdmin(const String& firstName,
 	const String& lastName,
@@ -45,18 +42,18 @@ void System::addAdmin(const String& firstName,
 	User user(firstName, lastName, password, nickname);
 
 	_admins.push_back(std::move(user));
-	User::nicknames.push_back(nickname);
+	User::usernames.push_back(nickname);
 }
 void System::addPlayer(const Player& player) {
 	adminCheck();
 
 	_players.push_back(player);
-	User::nicknames.push_back(player.username());
+	User::usernames.push_back(player.username());
 
 }
 void System::addPlayer(Player&& player) {
 	adminCheck();
-	User::nicknames.push_back(player.username());
+	User::usernames.push_back(player.username());
 	_players.push_back(std::move(player));
 }
 void System::addPlayer(const char* firstName,
@@ -68,7 +65,7 @@ void System::addPlayer(const char* firstName,
 
 	Player player(firstName, lastName, username, password, money);
 	_players.push_back(std::move(player));
-	User::nicknames.push_back(username);
+	User::usernames.push_back(username);
 
 }
 void System::addPlayer(const String& firstName,
@@ -80,7 +77,7 @@ void System::addPlayer(const String& firstName,
 
 	Player player(firstName, lastName, password, username, money);
 	_players.push_back(std::move(player));
-	User::nicknames.push_back(username);
+	User::usernames.push_back(username);
 }
 
 //Всеки администратор трябва да може да изтрива профили на играчи.
@@ -116,17 +113,17 @@ void System::printInfo(const String& nickname) const {
 }
 
 //Всеки администратор трябва да може да добавя нови супергерои към “пазара”. В случай, че на “пазара” няма никакви супергерои, администраторът още с влизането си трябва да добави поне 3 супергероя. Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, ако не желае да добавя нов.
-void System::addToMarket(const Superhero& superhero) {
+void System::addSuperhero(const Superhero& superhero) {
 	adminCheck();
 
 	_market.push_back(superhero);
 }
-void System::addToMarket(Superhero&& superhero) {
+void System::addSuperhero(Superhero&& superhero) {
 	adminCheck();
 
 	_market.push_back(std::move(superhero));
 }
-void System::addToMarket(const String& firstName,
+void System::addSuperhero(const String& firstName,
 	const String& lastName,
 	const String& nickname,
 	const Power& power,
@@ -261,7 +258,7 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 			size_t currSize = _players[i].superheroesCount();
 			for (size_t j = 0; j < currSize; j++)
 			{
-				if (_players[i].getAt(j) == &_market[superheroIdx])
+				if (_players[i].getHeroAt(j) == &_market[superheroIdx])
 				{
 					defender = &_players[i];
 					break;
@@ -282,7 +279,7 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		}
 		defender = &_players[idx];
 	}
-	Superhero& attackHero = *attacker.getAt(attacker.find(nickname));
+	Superhero& attackHero = *attacker.getHeroAt(attacker.findHero(nickname));
 
 	if (defender->superheroesCount() == 0)
 	{
@@ -295,9 +292,9 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	Superhero* defendHero = nullptr;
 	if (heroNickname == nullptr)
 	{
-		defendHero = defender->getAt(rand() % defender->superheroesCount());
+		defendHero = defender->getHeroAt(rand() % defender->superheroesCount());
 	}
-	defendHero = defender->getAt(defender->find(heroNickname));
+	defendHero = defender->getHeroAt(defender->findHero(heroNickname));
 
 	size_t attackerPoints = attackHero.strenght();
 	size_t defenderPoints = defendHero->strenght();

@@ -7,6 +7,7 @@ class Player : public User
 	double _money;
 	vector<Superhero*> superheroes;
 public:
+	//Constructors:
 	Player() = default;
 	Player(const String& firstName,
 		const String& lastName,
@@ -18,26 +19,42 @@ public:
 		const char* password,
 		const char* nickname,
 		double money);
-	double money() const;
-	int find(const char*) const;
-	int find(const String&) const;
-	Superhero* getAt(size_t);
+	Player(String&& firstName,
+		String&& lastName,
+		String&& password,
+		String&& nickname,
+		double money);
 
+	//Getters:
+	double money() const; 
+	Superhero* getHeroAt(size_t idx); //returns the superhero at given index
+	size_t superheroesCount() const; //Get superheroes count
 
+	//Returns the index of the superhero (-1 if not found)
+	int findHero(const char* username) const;
+	int findHero(const String& username) const;
+
+	//Print the player
 	void print(bool isAdmin = false) const override;
+
+	//Change mode of given superhero
 	void changeMode(const String& nickname, const Mode& mode);
 	void changeMode(const char* nickname, const Mode& mode);
 	void changeMode(Superhero* superhero, const Mode& mode);
 
-	void addSuperhero(Superhero* superhero); //-money, mode
+	//Add new superhero to the collection
+	void addSuperhero(Superhero* superhero); 
+
+	//Decrease mmoney
 	void loseMoney(double money);
+	//Increase money
 	void winMoney(double money);
 
-	size_t superheroesCount() const;
-
+	//Removes the superhero from the collection
 	void removeSuperhero(Superhero* superhero);
 
-	void writeToBinary(std::ofstream& os) const override;
-	void readFromBinary(std::ifstream& is) override;
+	//Work with files
+	void writeToBinary(std::ofstream& os) const override; //write player in binary file
+	void readFromBinary(std::ifstream& is) override; //read player from binary file
 };
 

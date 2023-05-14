@@ -14,46 +14,65 @@ class System
 public:
 	System();
 
+	//returns if there is logged in user
 	bool isLogged() const;
-	//admin funcs:
-	void addAdmin(const User& user);
-	void addAdmin(User&& user);
+
+	//Getters:
+	vector<Superhero> market() const;
+
+	//ADMIN FUNCTIONS::
+	void addAdmin(const User& user); //add new admin
+	void addAdmin(User&& user); //add new admin
 	void addAdmin(const char* firstName,
 				  const char* lastName,
 				  const char* nickname,
-				  const char* password);
+				  const char* password); //add new admin
 	void addAdmin(const String& firstName,
 				  const String& lastName,
 				  const String& nickname,
-				  const String& password);
-	void addPlayer(const Player& player);
-	void addPlayer(Player&& player);
+				  const String& password); //add new admin
+	void addAdmin(String&& firstName,
+				  String&& lastName,
+				  String&& nickname,
+				  String&& password); //add new admin
+	void addPlayer(const Player& player);//add new player
+	void addPlayer(Player&& player);//add new player
 	void addPlayer(const char* firstName,
 				   const char* lastName,
 				   const char* nickname,
 				   const char* password,
-				   double money);
+				   double money);//add new player
 	void addPlayer(const String& firstName,
 				   const String& lastName,
 				   const String& nickname,
 				   const String& password,
-				   double money);
-	void deletePlayer(const String& nickname); 
-	void printInfo(const String& nickname) const;
-	void addToMarket(const Superhero& superhero);
-	void addToMarket(Superhero&& superhero);
-	void addToMarket(const String& firstName,
+				   double money);//add new player
+	void addPlayer(String&& firstName,
+				   String&& lastName,
+				   String&& nickname,
+				   String&& password,
+				   double money);//add new player
+	void deletePlayer(const String& nickname); //delete player
+	void printInfo(const String& nickname) const; //prints info about user
+	void addSuperhero(const Superhero& superhero); //add superhero to market 
+	void addSuperhero(Superhero&& superhero);//add superhero to market 
+	void addSuperhero(const String& firstName,
 					 const String& lastName,
 					 const String& _nickname,
 					 const Power& power,
 					 size_t strenght,
 					 double price = 0.0, 
-					 Mode mode = Mode::notBought);
-	vector<Superhero> market() const;
-	void resurrect(const String& nickname);
+					 Mode mode = Mode::notBought); //add superhero to market 
+	void addSuperhero(String&& firstName,
+					  String&& lastName,
+					  String&& _nickname,
+					  Power power,
+					  size_t strenght,
+					  double price = 0.0,
+					  Mode mode = Mode::notBought); //add superhero to market 
+	void resurrect(const String& nickname); //resurrect superhero
 	
-
-	//player funcs:
+	//PLAYER FUNCTIONS:
 	void deleteMe(); 
 	void printPlayers() const;
 	void printAdmins() const;
@@ -67,14 +86,13 @@ public:
 
 	bool isAdmin() const;
 
-	void login(const String& nickname, const String& password);
 
+	void login(const String& nickname, const String& password);
 	void logout();
 
-	static vector<String> nicknames;
-
-	void writeToBinary(std::ofstream& os) const;
-	void readFromBinary(std::ifstream& is);
+	//work with files
+	void writeToBinary(std::ofstream& os) const; //write in binary file
+	void readFromBinary(std::ifstream& is); // read from binary file
 private:
 	void deletePlayerAt(size_t idx);
 	void deleteAdminAt(size_t idx);

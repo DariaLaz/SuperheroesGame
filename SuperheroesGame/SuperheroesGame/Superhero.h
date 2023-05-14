@@ -14,6 +14,7 @@ class Superhero
 	double _price;
 	Mode _mode = Mode::notBought;
 
+	//Nicknames of existing superheroes
 	static vector<String> nicknames;
 public:
 	Superhero() = default;

@@ -182,7 +182,7 @@ void Interface::addSyperhero() {
 	std::cin >> strenght;
 	std::cout << "Price: ";
 	std::cin >> price;
-	_system.addToMarket(firstName, lastName, nickname, getPower(power), strenght, price, Mode::notBought);
+	_system.addSuperhero(firstName, lastName, nickname, getPower(power), strenght, price, Mode::notBought);
 }
 void Interface::resurrect() {
 	String nickname;
