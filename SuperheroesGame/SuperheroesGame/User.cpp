@@ -81,9 +81,6 @@ bool User::isUnique(const String& nickname) const {
 bool User::isPass(const String& pass) const {
 	return _password == pass;
 }
-void User::print(bool isAdmin) const {
-	std::cout << "+++" << username() << " (admin) " << "+++\n";
-}
 
 void User::writeToBinary(std::ofstream& os) const {
 	if (!os.is_open())

@@ -73,7 +73,7 @@ void Interface::login() {
 
 	std::cout << "You successfully logged as " << nickname << std::endl;
 
-	while (_system.isAdmin() && _system.market().size() < 3)
+	while (_system.isAdmin() && _system.marketSize() < 3)
 	{
 		std::cout << "There are less that 3 superheroes on the market. You should add superhero!\n";
 		try
@@ -191,11 +191,8 @@ void Interface::resurrect() {
 	_system.resurrect(nickname);
 }
 void Interface::users() const {
-	std::cout << "PLAYERS: " << std::endl;
-	_system.printPlayers();
-	std::cout << "ADMINS: " << std::endl;
-	_system.printAdmins();
-
+	std::cout << "USERS: " << std::endl;
+	_system.printUsers();
 }
 void Interface::market() const {
 	std::cout << "MARKET: " << std::endl;
@@ -222,21 +219,8 @@ void Interface::add(bool isAdmin) {
 	std::cin >> username;
 	std::cout << "Password: ";
 	std::cin >> password;
-	if (isAdmin)
-	{
-		_system.addAdmin(firstName, lastName, username, password);
-		std::cout << "Admin " << username << " created successfully!" << std::endl;
-	}
-	else
-	{
-		double money;
-
-		std::cout << "Money: ";
-		std::cin >> money;
-
-		_system.addPlayer(firstName, lastName, username, password, money);
-		std::cout << "Player " << username << " created successfully!" << std::endl;
-	}
+	_system.addUser(firstName, lastName, username, password, isAdmin);
+	std::cout << (isAdmin? "Admin " : "Player ") << username << " created successfully!" << std::endl;
 }
 void Interface::deletePlayer() {
 	String nickname;
@@ -284,39 +268,6 @@ void Interface::exit() const {
 	ofs.close();
 }
 
-
-//Power getPower(const String& pow) {
-//	if (lower(pow) == "fire")
-//	{
-//		return Power::fire;
-//	}
-//	else if (lower(pow) == "water")
-//	{
-//		return Power::water;
-//	}
-//	else if (lower(pow) == "earth")
-//	{
-//		return Power::earth;
-//	}
-//	else
-//	{
-//		throw std::logic_error("Invalid power!");
-//	}
-//}
-//Mode getMode(const String& mode) {
-//	if (lower(mode) == "attack")
-//	{
-//		return Mode::attack;
-//	}
-//	else if (lower(mode) == "defence")
-//	{
-//		return Mode::defence;
-//	}
-//	else
-//	{
-//		throw std::logic_error("Invalid mode!");
-//	}
-//}
 String lower(const String& str) {
 	String result(str);
 	for (size_t i = 0; i < str.length(); i++)

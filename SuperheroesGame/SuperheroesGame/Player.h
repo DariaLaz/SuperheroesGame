@@ -1,6 +1,7 @@
 #pragma once
 #include "User.h"
 #include "Superhero.h"
+const size_t m = 50;
 
 class Player : public User
 {
@@ -13,17 +14,17 @@ public:
 		const String& lastName,
 		const String& password,
 		const String& nickname,
-		double money);
+		double money = m);
 	Player(const char* firstName,
 		const char* lastName,
 		const char* password,
 		const char* nickname,
-		double money);
+		double money = m);
 	Player(String&& firstName,
 		String&& lastName,
 		String&& password,
 		String&& nickname,
-		double money);
+		double money = m);
 
 	//Getters:
 	double money() const; 
@@ -35,7 +36,7 @@ public:
 	int findHero(const String& username) const;
 
 	//Print the player
-	void print(bool isAdmin = false) const override;
+	void print() const override;
 
 	//Change mode of given superhero
 	void changeMode(const String& nickname, const Mode& mode);
@@ -56,5 +57,8 @@ public:
 	//Work with files
 	void writeToBinary(std::ofstream& os) const override; //write player in binary file
 	void readFromBinary(std::ifstream& is) override; //read player from binary file
+
+	User* clone() const override;
+	bool isAdmin() const override;
 };
 

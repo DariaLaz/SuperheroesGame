@@ -54,12 +54,12 @@ size_t Player::superheroesCount() const {
 	return superheroes.size();
 }
 
-void Player::print(bool isAdmin) const {
+void Player::print() const {
 	std::cout << "+++" << username() << " ($" << _money << ") " << "+++\n";
 	std::cout << " Superheroes: \n";
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
-		superheroes[i]->print(isAdmin);
+		superheroes[i]->print(isAdmin());
 	}
 }
 
@@ -123,4 +123,12 @@ void Player::writeToBinary(std::ofstream& os) const {
 void Player::readFromBinary(std::ifstream& is) {
 	User::readFromBinary(is);
 	is.read((char*)&_money, sizeof(double));
+}
+
+User* Player::clone() const {
+	User* user = new Player(*this);
+	return user;
+}
+bool Player::isAdmin() const {
+	return false;
 }

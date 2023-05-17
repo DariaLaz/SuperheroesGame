@@ -8,88 +8,65 @@ System::System() {
 
 	readFromBinary(ifs);
 	ifs.close();
-	if (_admins.size() == 0)
+	if (users.size() == 0)
 	{
-		User admin("Admin", "Admin", "Pass1", "admin");
-		_admins.push_back(std::move(admin));
+		User* user = new Admin("Admin", "Admin", "admin", "Pass1");
+		users.add(user);
 	}
 }
 
 //ADMIN FUNCTIONS
 //Всеки администратор трябва да може да добавя нови администратори и играчи в системата.
-void System::addAdmin(const User& user) {
+void System::addUser(const User& user) {
 	adminCheck();
-	_admins.push_back(user);
+	users.add(&user);
 }
-void System::addAdmin(User&& user) {
-	adminCheck();
-	_admins.push_back(std::move(user));
-}
-void System::addAdmin(const char* firstName,
-	const char* lastName,
-	const char* nickname,
-	const char* password) {
-	adminCheck();
-	User user(firstName, lastName, password, nickname);
-	_admins.push_back(std::move(user));
-}
-void System::addAdmin(const String& firstName,
-	const String& lastName,
-	const String& nickname,
-	const String& password) {
-	adminCheck();
 
-	User user(firstName, lastName, password, nickname);
-
-	_admins.push_back(std::move(user));
-	User::usernames.push_back(nickname);
-}
-void System::addPlayer(const Player& player) {
-	adminCheck();
-
-	_players.push_back(player);
-	User::usernames.push_back(player.username());
-
-}
-void System::addPlayer(Player&& player) {
-	adminCheck();
-	User::usernames.push_back(player.username());
-	_players.push_back(std::move(player));
-}
-void System::addPlayer(const char* firstName,
+void System::addUser(const char* firstName,
 	const char* lastName,
 	const char* username,
 	const char* password,
-	double money) {
+	bool isAdmin) {
 	adminCheck();
-
-	Player player(firstName, lastName, username, password, money);
-	_players.push_back(std::move(player));
-	User::usernames.push_back(username);
-
+	User* user = nullptr;
+	if (isAdmin)
+	{
+		user = new Admin(firstName, lastName, username, password);
+	}
+	else
+	{
+		user = new Player(firstName, lastName, username, password);
+	}
+	users.add(user);
 }
-void System::addPlayer(const String& firstName,
+void System::addUser(const String& firstName,
 	const String& lastName,
 	const String& username,
 	const String& password,
-	double money) {
+	bool isAdmin) {
 	adminCheck();
-
-	Player player(firstName, lastName, password, username, money);
-	_players.push_back(std::move(player));
-	User::usernames.push_back(username);
+	User* user = nullptr;
+	if (isAdmin)
+	{
+		user = new Admin(firstName, lastName, username, password);
+	}
+	else
+	{
+		user = new Player(firstName, lastName, username, password);
+	}
+	users.add(user);
 }
 
 //Всеки администратор трябва да може да изтрива профили на играчи.
 void System::deletePlayer(const String& nickname) {
 	adminCheck();
 
-	int idx = findPlayer(nickname);
-	if (idx < 0)
+	int idx = users.find(nickname);
+	if (idx < 0 || users[idx]->isAdmin())
 	{
 		throw std::out_of_range("Invalid nickname!");
 	}
-	deletePlayerAt(idx);
+	deleteUserAt(idx);
 }
 
 //Всеки администратор трябва да има права да вижда цялата информацията за всеки потребител и неговия 
@@ -97,31 +74,25 @@ void System::deletePlayer(const String& nickname) {
 void System::printInfo(const String& nickname) const {
 	adminCheck();
 
-	int idx = findPlayer(nickname);
-	if (idx >= 0)
+	int idx = users.find(nickname);
+	if (idx < 0)
 	{
-		_players[idx].print(true);
-		return;
+		throw std::out_of_range("Invalid nickname!");
+
 	}
-	idx = findAdmin(nickname);
-	if (idx >= 0)
-	{
-		_admins[idx].print(true);
-		return;
-	}
-	throw std::out_of_range("Invalid nickname!");
+	users[idx]->print();
 }
 
 //Всеки администратор трябва да може да добавя нови супергерои към “пазара”. В случай, че на “пазара” няма никакви супергерои, администраторът още с влизането си трябва да добави поне 3 супергероя. Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, ако не желае да добавя нов.
 void System::addSuperhero(const Superhero& superhero) {
 	adminCheck();
 
-	_market.push_back(superhero);
+	market.push_back(superhero);
 }
 void System::addSuperhero(Superhero&& superhero) {
 	adminCheck();
 
-	_market.push_back(std::move(superhero));
+	market.push_back(std::move(superhero));
 }
 void System::addSuperhero(const String& firstName,
 	const String& lastName,
@@ -132,7 +103,7 @@ void System::addSuperhero(const String& firstName,
 	Mode mode) {
 	adminCheck();
 	Superhero hero(firstName, lastName, nickname, power, strenght, price, mode);
-	_market.push_back(std::move(hero));
+	market.push_back(std::move(hero));
 }
 void System::resurrect(const String& nickname) {
 	adminCheck();
@@ -142,62 +113,61 @@ void System::resurrect(const String& nickname) {
 	{
 		throw std::out_of_range("Invalid nickname!");
 	}
-	if (_market[idx].mode() != Mode::dead)
+	if (market[idx].mode() != Mode::dead)
 	{
 		throw std::logic_error("This superhero already exists!");
 	}
-	_market[idx].setMode(Mode::notBought);
+	market[idx].setMode(Mode::notBought);
 }
-
-vector<Superhero> System::market() const {
-	return _market;
-}
-
-
 
 
 //PLAYER FUNCTIONS
 //Всеки играч трябва да може да изтрива профила си.
 void System::deleteMe() {
 	userCheck();
-	if (_isAdmin)
+	if (current->isAdmin() && users.adminsCount() == 1)
 	{
-		if (_admins.size() == 1)
-		{
-			throw std::logic_error("You are the only admin and cannot be deleted!");
-		}
-		deleteAdminAt(findAdmin(current->username()));
+		throw std::logic_error("You are the only admin and cannot be deleted!");
 	}
-	else
-	{
-		deletePlayerAt(findPlayer(current->username()));
-	}
+	deleteUserAt(users.find(current->username()));
 	current = nullptr;
 }
 /*Всеки играч трябва да може да вижда списък от всички играчи, в който са записани само техните потребителски имена,
 		с колко пари разполагат и какви супергерои имат(без тяхната сила).*/
-void System::printPlayers() const {
+void System::printUsers() const {
 	userCheck();
-	for (size_t i = 0; i < _players.size(); i++)
+	for (size_t i = 0; i < users.size(); i++)
 	{
-		_players[i].print(_isAdmin);
+		if (!users[i]->isAdmin() || current->isAdmin())
+		{
+			users[i]->print();
+		}
 	}
 } 
-void System::printAdmins() const {
-	userCheck();
-	if (!_isAdmin)
-	{
-		return;
-	}
-	for (size_t i = 0; i < _players.size(); i++)
-	{
-		_admins[i].print();
-	}
-}
+
 //Всеки играч трябва да може да вижда моментното класиране
 void System::results() {
-	sort();
-	printPlayers();
+	vector<Player*> players = this->players();
+	size_t size = players.size();
+	for (size_t i = 0; i < size; i++)
+	{
+		size_t maxIndex = i;
+		for (size_t j = i; j < size; j++)
+		{
+			if (players[maxIndex]->money() < players[j]->money())
+			{
+				maxIndex = j;
+			}
+		}
+		if (maxIndex != i)
+		{
+			swap(players[i], players[maxIndex]);
+		}
+	}
+	for (size_t i = 0; i < size; i++)
+	{
+		players[i]->print();
+	}
 }
 //Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, 
 //ако не желае да добавя нов.
@@ -207,11 +177,11 @@ void System::results() {
 void System::printMarket() const {
 	userCheck();
 
-	for (size_t i = 0; i < _market.size(); i++)
+	for (size_t i = 0; i < market.size(); i++)
 	{
-		if (_market[i].mode() == Mode::notBought || (_isAdmin && _market[i].mode() == Mode::dead))
+		if (market[i].mode() == Mode::notBought || (current->isAdmin() && market[i].mode() == Mode::dead))
 		{
-			_market[i].print(_isAdmin);
+			market[i].print(current->isAdmin());
 		}
 	}
 }
@@ -230,11 +200,11 @@ void System::buy(const String& nickname) {
 void System::buy(const char* nickname) {
 	playerCheck();
 	int idx = findSuperhero(nickname);
-	if (idx < 0 || _market[idx].mode() != Mode::notBought)
+	if (idx < 0 || market[idx].mode() != Mode::notBought)
 	{
 		throw std::out_of_range("Invalid nickname!");
 	}
-	((Player*)current)->addSuperhero(&_market[idx]);
+	((Player*)current)->addSuperhero(&market[idx]);
 }
 //Всеки играч трябва да може да нападне избран от него супергерой на даден потребител.
 int System::attack(const String& nickname, const String& userNickname, const String& heroNickname) {
@@ -242,6 +212,8 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	Player& attacker = *((Player*)current);
 	Player* defender = nullptr;
 	
+	vector<Player*> players = this->players();
+
 	if (userNickname == nullptr)
 	{
 		size_t superheroIdx = findSuperhero(heroNickname);
@@ -249,18 +221,19 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		{
 			throw std::out_of_range("Invalid nickname!");
 		}
-		if (_market[superheroIdx].mode() == Mode::notBought || _market[superheroIdx].mode() == Mode::dead)
+		if (market[superheroIdx].mode() == Mode::notBought 
+			|| market[superheroIdx].mode() == Mode::dead)
 		{
 			throw std::logic_error("Invalid nickname!");
 		}
-		for (size_t i = 0; i < _players.size(); i++)
+		for (size_t i = 0; i < players.size(); i++)
 		{
-			size_t currSize = _players[i].superheroesCount();
+			size_t currSize = players[i]->superheroesCount();
 			for (size_t j = 0; j < currSize; j++)
 			{
-				if (_players[i].getHeroAt(j) == &_market[superheroIdx])
+				if (players[i]->getHeroAt(j) == &market[superheroIdx])
 				{
-					defender = &_players[i];
+					defender = players[i];
 					break;
 				}
 			}
@@ -272,12 +245,12 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	}
 	else
 	{
-		int idx = findPlayer(userNickname);
-		if (idx < 0)
+		int idx = users.find(userNickname);
+		if (idx < 0 || users[idx]->isAdmin())
 		{
 			throw std::out_of_range("Invalid username!");
 		}
-		defender = &_players[idx];
+		defender = players[idx];
 	}
 	Superhero& attackHero = *attacker.getHeroAt(attacker.findHero(nickname));
 
@@ -338,69 +311,34 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 }
 
 void System::login(const String& username, const String& password) {
-	for (size_t i = 0; i < _admins.size(); i++)
+	for (size_t i = 0; i < users.size(); i++)
 	{
-		if (_admins[i].username() == username && _admins[i].isPass(password))
+		if (users[i]->username() == username && users[i]->isPass(password))
 		{
-			_isAdmin = true;
-			current = &_admins[i];
+			current = users[i];
 			return;
 		}
 	}
-	for (size_t i = 0; i < _players.size(); i++)
-	{
-		if (_players[i].username() == username && _players[i].isPass(password))
-		{
-			_isAdmin = false;
-			current = &_players[i];
-			return;
-		}
-	}
-	throw std::logic_error("Invalid username ot password");
+	throw std::logic_error("Invalid username or password");
 }
 
 void System::logout() {
-	_isAdmin = false;
 	current = nullptr;
 }
 bool System::isLogged() const {
 	return current != nullptr;
 }
 bool System::isAdmin() const {
-	return _isAdmin;
+	return current && current->isAdmin();
 }
 
-void System::deletePlayerAt(size_t idx) {
-	_players.erase(idx);
-}
-void System::deleteAdminAt(size_t idx) {
-	_admins.erase(idx);
-}
-
-int System::findPlayer(const String& nickname) const {
-	for (size_t i = 0; i < _players.size(); i++)
-	{
-		if (_players[i].username() == nickname)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-int System::findAdmin(const String& nickname) const {
-	for (size_t i = 0; i < _admins.size(); i++)
-	{
-		if (_admins[i].username() == nickname)
-		{
-			return i;
-		}
-	}
-	return -1;
+void System::deleteUserAt(size_t idx) {
+	users.removeAt(idx);
 }
 int System::findSuperhero(const String& nickname) const {
-	for (size_t i = 0; i < _market.size(); i++)
+	for (size_t i = 0; i < market.size(); i++)
 	{
-		if (_market[i].nickname() == nickname)
+		if (market[i].nickname() == nickname)
 		{
 			return i;
 		}
@@ -408,9 +346,9 @@ int System::findSuperhero(const String& nickname) const {
 	return -1;
 }
 int System::findSuperhero(const char* nickname) const {
-	for (size_t i = 0; i < _market.size(); i++)
+	for (size_t i = 0; i < market.size(); i++)
 	{
-		if (strcmp(_market[i].nickname().c_str(), nickname) == 0)
+		if (strcmp(market[i].nickname().c_str(), nickname) == 0)
 		{
 			return i;
 		}
@@ -418,24 +356,7 @@ int System::findSuperhero(const char* nickname) const {
 	return -1;
 }
 
-void System::sort() {
-	size_t size = _players.size();
-	for (size_t i = 0; i < size; i++)
-	{
-		size_t maxIndex = i;
-		for (size_t j = i; j < size; j++)
-		{
-			if (_players[maxIndex].money() < _players[j].money())
-			{
-				maxIndex = j;
-			}
-		}
-		if (maxIndex != i)
-		{
-			swap(_players[i], _players[maxIndex]);
-		}
-	}
-}
+
 
 void System::userCheck() const {
 	if (!current)
@@ -444,13 +365,13 @@ void System::userCheck() const {
 	}
 }
 void System::adminCheck() const {
-	if (!_isAdmin)
+	if (!isAdmin())
 	{
 		throw std::logic_error("Not an admin!");
 	}
 }
 void System::playerCheck() const {
-	if (_isAdmin || !current)
+	if (!current || isAdmin())
 	{
 		throw std::logic_error("Not a player!");
 	}
@@ -467,61 +388,57 @@ int System::comparePower(const Power& pow1, const Power& pow2) const {
 }
 
 void System::writeToBinary(std::ofstream& os) const {
-	writeUsersToBinary(_admins.data(), _admins.size(), os);
-
-	size_t size = _market.size();
+	size_t size = market.size();
 	os.write((const char*)&size, sizeof(size_t));
 	for (size_t i = 0; i < size; i++)
 	{
-		_market[i].writeToBinary(os);
+		market[i].writeToBinary(os);
 	}
 
-	writeUsersToBinary(_players.data(), _players.size(), os);
+	users.writeToBinary(os);
 
 }
 void System::readFromBinary(std::ifstream& is) {
 	size_t currentSize = 0;
 	is.read((char*)&currentSize, sizeof(size_t));
-	_admins = vector<User>(currentSize);
-	for (size_t i = 0; i < currentSize; i++)
-	{
-		User user;
-		user.readFromBinary(is);
-		_admins.push_back(std::move(user));
-	}
-
-	is.read((char*)&currentSize, sizeof(size_t));
-	_market = vector<Superhero>(currentSize);
+	market = vector<Superhero>(currentSize);
 
 	for (size_t i = 0; i < currentSize; i++)
 	{
 		Superhero superhero;
 		superhero.readFromBinary(is);
-		_market.push_back(std::move(superhero));
+		market.push_back(std::move(superhero));
 	}
-
 	is.read((char*)&currentSize, sizeof(size_t));
-	_players = vector<Player>(currentSize);
 	for (size_t i = 0; i < currentSize; i++)
 	{
-		Player player;
-		player.readFromBinary(is);
-		_players.push_back(std::move(player));
+		bool isAdmin = true;
+		is.read((char*)&isAdmin, sizeof(bool));
 
-
-		size_t superheroesSize = 0;
-		is.read((char*)&superheroesSize, sizeof(size_t));
-		for (size_t j = 0; j < superheroesSize; j++)
+		if (isAdmin)
 		{
-			String currentNickname;
-			currentNickname.readFromBinary(is);
+			Admin admin;
+			admin.readFromBinary(is);
+			addUser(std::move(admin));
+		}
+		else
+		{
+			Player player;
+			player.readFromBinary(is);
 
-			int idx = findSuperhero(currentNickname);
-			_players[i].addSuperhero(&_market[idx]);
+			size_t superheroesSize = 0;
+			is.read((char*)&superheroesSize, sizeof(size_t));
+			for (size_t j = 0; j < superheroesSize; j++)
+			{
+				String currentNickname;
+				currentNickname.readFromBinary(is);
+
+				int idx = findSuperhero(currentNickname);
+				player.addSuperhero(&market[idx]);
+			}
+			addUser(std::move(player));
 		}
 	}
-	
-	
 }
 
 void writeUsersToBinary(const User* users, size_t size, std::ofstream& os) {
@@ -530,4 +447,20 @@ void writeUsersToBinary(const User* users, size_t size, std::ofstream& os) {
 	{
 		users[i].writeToBinary(os);
 	}
+}
+
+size_t System::marketSize() const {
+	return market.size();
+}
+
+vector<Player*> System::players() const {
+	vector<Player*> result;
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (users[i]->isAdmin() == false)
+		{
+			result.push_back((Player*)users[i]);
+		}
+	}
+	return result;
 }

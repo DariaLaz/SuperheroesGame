@@ -8,12 +8,10 @@ class User
 	String _lastName;
 	String _username;
 	String _password;
-
+protected:
 	//Usernames of existing users
 	static vector<String> usernames;
 public:
-
-
 	//Constructors:
 	User() = default;
 	User(const String& firstName,
@@ -38,12 +36,17 @@ public:
 	bool isPass(const String& pass) const;
 
 	//Print user
-	virtual void print(bool isAdmin = false) const;
+	virtual void print() const = 0;
 
 	//Write user in binary file
 	virtual void writeToBinary(std::ofstream& os) const;
 	//Read user from binary file
 	virtual void readFromBinary(std::ifstream& is);
+
+	//Returns copy of the object
+	virtual User* clone() const = 0;
+
+	virtual bool isAdmin() const = 0;
 private:
 	//checks if the given username is unique (does not exist user with the same username)
 	bool isUnique(const String& username) const;
