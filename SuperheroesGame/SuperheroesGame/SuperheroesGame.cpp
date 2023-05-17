@@ -1,11 +1,11 @@
 #include <iostream>
 #include "System.h"
-#include "interface.h"
+#include "GameInterface.h"
 
 
 int main()
 {
-    Interface inf;
+    GameInterface inf;
 
 	inf.run();
 }

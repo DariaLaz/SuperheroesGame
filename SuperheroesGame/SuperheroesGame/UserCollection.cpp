@@ -1,6 +1,14 @@
 #include "UserCollection.h"
 
 UserCollection::UserCollection() : UserCollection(8) {}
+UserCollection::UserCollection(const UserCollection& other) : users(other.users.capacity()) {
+	_size = other._size;
+	for (size_t i = 0; i < _size; i++)
+	{
+		users[i] = other.users[i]->clone();
+	}
+}
+
 UserCollection::UserCollection(size_t capacity) : users(capacity) {}
 UserCollection::~UserCollection() {
 	for (size_t i = 0; i < _size; i++)

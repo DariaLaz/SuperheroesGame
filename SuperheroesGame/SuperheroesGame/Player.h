@@ -1,7 +1,6 @@
 #pragma once
 #include "User.h"
 #include "Superhero.h"
-const size_t m = 50;
 
 class Player : public User
 {
@@ -14,17 +13,17 @@ public:
 		const String& lastName,
 		const String& password,
 		const String& nickname,
-		double money = m);
+		double money = GameConstants::START_MONEY);
 	Player(const char* firstName,
 		const char* lastName,
 		const char* password,
 		const char* nickname,
-		double money = m);
+		double money = GameConstants::START_MONEY);
 	Player(String&& firstName,
 		String&& lastName,
 		String&& password,
 		String&& nickname,
-		double money = m);
+		double money = GameConstants::START_MONEY);
 
 	//Getters:
 	double money() const; 

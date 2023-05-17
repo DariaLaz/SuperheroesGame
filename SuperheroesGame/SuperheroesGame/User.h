@@ -50,6 +50,12 @@ public:
 private:
 	//checks if the given username is unique (does not exist user with the same username)
 	bool isUnique(const String& username) const;
+
+	void setUsername(const char* name);
+	void setUsername(const String& name);
+	void setUsername(String&& name);
+
+
 };
 //Checks if the password is valid (contains at least one lowercase letter, uppercase letter and digit)
 bool isValidPass(const char* password);

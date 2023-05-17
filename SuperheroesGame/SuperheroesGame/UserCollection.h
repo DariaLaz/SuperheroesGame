@@ -11,6 +11,8 @@ class UserCollection
 
 public:
 	UserCollection();
+	UserCollection(const UserCollection& other);
+
 	explicit UserCollection(size_t capacity);
 	~UserCollection(); //?
 

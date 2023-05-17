@@ -6,26 +6,22 @@ vector<String> User::usernames(8);
 User::User(const String& firstName,
 	const String& lastName,
 	const String& password,
-	const String& nickname) {
+	const String& username) {
 	try
 	{
 		if (firstName == "" || lastName == "")
 		{
 			throw std::invalid_argument("Invalid name");
 		}
-		_firstName = firstName;
-		_lastName = lastName;
 		if (!isValidPass(password))
 		{
 			throw std::invalid_argument("Invalid password");
 		}
-		if (!isUnique(nickname))
-		{
-			throw std::invalid_argument("Invalid nickname");
-		}
+		setUsername(username);
+
+		_firstName = firstName;
+		_lastName = lastName;
 		_password = password;
-		_username = nickname;
-		usernames.push_back(nickname);
 	}
 	catch (const std::invalid_argument&)
 	{
@@ -42,19 +38,15 @@ User::User(String&& firstName,
 	String&& username) {
 	try
 	{
-		_firstName = std::move(firstName);
-		_lastName = std::move(lastName);
 		if (!isValidPass(password))
 		{
 			throw std::logic_error("Invalid password");
 		}
-		if (!isUnique(username))
-		{
-			throw std::logic_error("Invalid nickname");
-		}
+		setUsername(std::move(username));
+
+		_firstName = std::move(firstName);
+		_lastName = std::move(lastName);
 		_password = std::move(password);
-		usernames.push_back(username);
-		_username = std::move(username);
 	}
 	catch (const std::logic_error&)
 	{
@@ -99,6 +91,44 @@ void User::readFromBinary(std::ifstream& is) {
 	_lastName.readFromBinary(is);
 	_username.readFromBinary(is);
 	_password.readFromBinary(is);
+}
+void User::setUsername(const char* name) {
+	if (strlen(name) > 16)
+	{
+		throw std::invalid_argument("Username can be max 16 symbols");
+	}
+	if (!isUnique(name))
+	{
+		throw std::invalid_argument("Invalid nickname");
+	}
+	_username = name;
+	usernames.push_back(_username);
+}
+
+void User::setUsername(const String& name) {
+	if (name.length() > 16)
+	{
+		throw std::invalid_argument("Username can be max 16 symbols");
+	}
+	if (!isUnique(name))
+	{
+		throw std::invalid_argument("Invalid nickname");
+	}
+	_username = name;
+	usernames.push_back(name);
+}
+
+void User::setUsername(String&& name) {
+	if (name.length() > 16)
+	{
+		throw std::invalid_argument("Username can be max 16 symbols");
+	}
+	if (!isUnique(name))
+	{
+		throw std::invalid_argument("Invalid nickname");
+	}
+	_username = std::move(name);
+	usernames.push_back(_username);
 }
 
 

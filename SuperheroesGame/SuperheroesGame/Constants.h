@@ -10,3 +10,7 @@ namespace VectorConstants {
 namespace FileConstants {
 	const char FILE_NAME[8] = "sys.dat";
 }
+
+namespace GameConstants {
+	const size_t START_MONEY = 50;
+}
