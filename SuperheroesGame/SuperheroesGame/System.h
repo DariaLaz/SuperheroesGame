@@ -7,21 +7,31 @@
 
 class System
 {
+	static System* system ;
+
 	UserCollection users;
 	vector<Superhero> market;
 	User* current = nullptr;
-public:
+
 	System();
+public:
+	
+	System(const System&) = delete;
+	System& operator=(const System&) = delete;
+
+	System& getInstance();
 
 	//returns if there is logged in user
 	bool isLogged() const;
 
+	void giveMoney();
+
 	//Getters:
-	//vector<Superhero> market() const;
+	const User* currentPlayer() const;
 
 	/*ADMIN FUNCTIONS:*/
 	
-	//add new aadmin
+	//add new admin
 	void addUser(const User& user);
 	void addUser(const char* firstName,
 				  const char* lastName,
@@ -117,7 +127,9 @@ private:
 	int comparePower(const Power& pow1, const Power& pow2) const;
 
 
-	vector<Player*> players() const;
+	Player* getSuperheroOwner(size_t superheroIdx, vector<Player*>& players) const;
+
+	vector<Player*>& players() const;
 
 };
 void writeUsersToBinary(const User* users, size_t size, std::ofstream& os);

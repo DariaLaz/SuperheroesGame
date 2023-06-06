@@ -1,7 +1,32 @@
 #include "System.h"
+System* System::system = nullptr;
+System& System::getInstance() {
+	if (system == nullptr)
+	{
+		system = new System();
+	}
+	return *system;
+}
+
+
+const User* System::currentPlayer() const {
+	return current;
+};
+
+void System::giveMoney() {
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (!users[i]->isAdmin())
+		{
+			Player* current = ((Player*)(users[i]));
+			size_t gain = GameConstants::MONEY_GAIN * current->money();
+			current->winMoney((gain > GameConstants::START_MONEY) ? gain : GameConstants::START_MONEY);
+		}
+	}
+}
+
 
 System::System() {
-
 	std::ifstream ifs(FileConstants::FILE_NAME, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
 		throw std::logic_error("Can not open the file!");
@@ -212,36 +237,23 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	Player& attacker = *((Player*)current);
 	Player* defender = nullptr;
 	
-	vector<Player*> players = this->players();
+	vector<Player*>& players = this->players();
 
 	if (userNickname == nullptr)
 	{
 		size_t superheroIdx = findSuperhero(heroNickname);
 		if (superheroIdx == -1)
-		{
 			throw std::out_of_range("Invalid nickname!");
-		}
-		if (market[superheroIdx].mode() == Mode::notBought 
-			|| market[superheroIdx].mode() == Mode::dead)
-		{
+
+		if (market[superheroIdx].mode() == Mode::notBought || market[superheroIdx].mode() == Mode::dead)
 			throw std::logic_error("Invalid nickname!");
-		}
-		for (size_t i = 0; i < players.size(); i++)
-		{
-			size_t currSize = players[i]->superheroesCount();
-			for (size_t j = 0; j < currSize; j++)
-			{
-				if (players[i]->getHeroAt(j) == &market[superheroIdx])
-				{
-					defender = players[i];
-					break;
-				}
-			}
-			if (defender != nullptr)
-			{
-				break;
-			}
-		}
+
+		vector<Player*>& players = this->players();
+
+		defender = getSuperheroOwner(superheroIdx, players);
+
+		if (!defender || defender == &attacker)
+			throw std::logic_error("Invalid nickname!");
 	}
 	else
 	{
@@ -252,11 +264,14 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		}
 		defender = players[idx];
 	}
+
 	Superhero& attackHero = *attacker.getHeroAt(attacker.findHero(nickname));
 
 	if (defender->superheroesCount() == 0)
 	{
+		//Ако играч нападне друг играч, който няма никакви супергерои, то парите на нападнатия играч намаляват с броя на атакуващите точки, които е имал нападащия супергерой 
 		defender->loseMoney(attackHero.strenght());
+		//нападащият играч печели х на брой пари
 		size_t win = rand() % (2 * attackHero.strenght());
 		attacker.winMoney(win);
 
@@ -271,7 +286,8 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 
 	size_t attackerPoints = attackHero.strenght();
 	size_t defenderPoints = defendHero->strenght();
-
+	//Ако нападащият играч е с доминиращ тип сила, то точките на супергероя му в тази битка биват удвоени
+	//В случай, че нападащият играч е с доминирания тип сила, то тогава точките на противниковия супергерой се удвояват
 	int cmp = comparePower(attackHero.power(), defendHero->power());
 	if (cmp < 0)
 	{
@@ -282,13 +298,17 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		attackerPoints *= 2;
 	}
 
+	//Победеният супергерой винаги бива унищожаван от колекцията на победения в битка играч
 	if (defenderPoints == attackerPoints)
 	{
+		//нападнатия играч не променя и не губи пари, но нападащия губи сума k.
+
 		size_t lose = rand() % attackHero.strenght();
 		attacker.loseMoney(lose);
 		return lose * (-1);
 	}
 	else if (defenderPoints < attackerPoints) {
+		//нападнатият играч губи пари с размер разликата на силата на супергероите, които се съревновават, а нападащият играч печели сума равна на същата разлика.
 		size_t diff = attackerPoints - defenderPoints;
 		attacker.winMoney(diff);
 		if (defendHero->mode() == Mode::attack)
@@ -301,6 +321,7 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	}
 	else if (defenderPoints > attackerPoints)
 	{
+		//нападнатият печели сума z, а нападащият губи пари на стойност 2 пъти разликата на силите на супергероите, които се съревновават
 		size_t diff = attackerPoints - defenderPoints;
 		defender->winMoney(rand() % (2 * diff));
 		attacker.loseMoney(2 * diff);
@@ -309,7 +330,22 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		return diff * (-2);
 	}
 }
+Player* System::getSuperheroOwner(size_t superheroIdx, vector<Player*>& players) const {
 
+	for (size_t i = 0; i < players.size(); i++)
+	{
+		size_t currSize = players[i]->superheroesCount();
+		for (size_t j = 0; j < currSize; j++)
+		{
+			if (players[i]->getHeroAt(j) == &market[superheroIdx])
+			{
+				return players[i];
+			}
+		}
+	}
+
+	return nullptr;
+}
 void System::login(const String& username, const String& password) {
 	for (size_t i = 0; i < users.size(); i++)
 	{
@@ -453,7 +489,7 @@ size_t System::marketSize() const {
 	return market.size();
 }
 
-vector<Player*> System::players() const {
+vector<Player*>& System::players() const {
 	vector<Player*> result;
 	for (size_t i = 0; i < users.size(); i++)
 	{
