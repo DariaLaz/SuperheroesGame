@@ -15,7 +15,7 @@ UserCollection::~UserCollection() {
 	{
 		delete users[i];
 	}
-} //?
+} 
 
 size_t UserCollection::add(bool isAdmin) {
 	if (isAdmin)

@@ -14,7 +14,7 @@ public:
 	UserCollection(const UserCollection& other);
 
 	explicit UserCollection(size_t capacity);
-	~UserCollection(); //?
+	~UserCollection(); 
 
 	size_t add(bool isAdmin);
 	size_t add(User* user);

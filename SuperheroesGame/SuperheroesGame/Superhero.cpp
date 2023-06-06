@@ -1,5 +1,5 @@
 #include "Superhero.h"
-
+#include "Helpers.h"
 vector<String> Superhero::nicknames(8);
 
 Superhero::Superhero(const String& firstName,
@@ -122,19 +122,19 @@ String getMode(const Mode& mode) {
 	}
 }
 Mode getMode(const String& mode) {
-	if (mode == "ATTACK")
+	if (compareCaseInsensitive(mode.c_str(), "ATTACK"))
 	{
 		return Mode::attack;
 	}
-	if (mode == "DEAD")
+	if (compareCaseInsensitive(mode.c_str(), "DEAD"))
 	{
 		return Mode::dead;
 	}
-	if (mode == "DEFENCE")
+	if (compareCaseInsensitive(mode.c_str(), "DEFENCE"))
 	{
 		return Mode::defence;
 	}
-	if (mode == "NOT BOUGHT")
+	if (compareCaseInsensitive(mode.c_str(), "NOT BOUGHT"))
 	{
 		return Mode::notBought;
 	}
@@ -152,15 +152,15 @@ String getPower(const Power& pow) {
 	}
 }
 Power getPower(const String& pow) {
-	if (pow == "EARTH")
+	if (compareCaseInsensitive(pow.c_str(), "EARTH"))
 	{
 		return Power::earth;
 	}
-	if (pow == "FIRE")
+	if (compareCaseInsensitive(pow.c_str(), "FIRE"))
 	{
 		return Power::fire;
 	}
-	if (pow == "WATER")
+	if (compareCaseInsensitive(pow.c_str(), "WATER"))
 	{
 		return Power::water;
 	}

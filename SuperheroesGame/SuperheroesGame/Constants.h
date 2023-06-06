@@ -13,4 +13,6 @@ namespace FileConstants {
 
 namespace GameConstants {
 	const size_t START_MONEY = 50;
+	const size_t TURN_CRITERIA = 5;
+	const double MONEY_GAIN = 0.7;
 }
