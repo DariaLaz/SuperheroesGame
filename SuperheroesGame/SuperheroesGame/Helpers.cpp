@@ -13,3 +13,13 @@ bool compareCaseInsensitive(const char* first, const char* second) {
 	}
 	return true;
 }
+
+bool isUpperCase(char ch) {
+	return ch >= 'A' && ch <= 'Z';
+}
+bool isDownCase(char ch) {
+	return ch >= 'a' && ch <= 'z';
+}
+bool isDigit(char ch) {
+	return ch >= '0' && ch <= '9';
+}

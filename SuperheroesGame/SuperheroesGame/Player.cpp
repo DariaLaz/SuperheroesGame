@@ -54,12 +54,12 @@ size_t Player::superheroesCount() const {
 	return superheroes.size();
 }
 
-void Player::print() const {
+void Player::print(bool isAdmin) const {
 	std::cout << "+++" << username() << " ($" << _money << ") " << "+++\n";
 	std::cout << " Superheroes: \n";
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
-		superheroes[i]->print(isAdmin());
+		superheroes[i]->print(this->isAdmin());
 	}
 }
 

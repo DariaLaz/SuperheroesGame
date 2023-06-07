@@ -17,6 +17,7 @@ class Superhero
 	//Nicknames of existing superheroes
 	static vector<String> nicknames;
 public:
+	//Constructors:
 	Superhero() = default;
 	Superhero(const String& firstName,
 			  const String& lastName,
@@ -32,6 +33,7 @@ public:
 			  size_t strenght,
 			  double price,
 			  const Mode& mode = Mode::notBought);
+	//Getters:
 	const String& firstName() const;
 	const String& lastName() const;
 	const String& nickname() const;
@@ -40,14 +42,17 @@ public:
 	double price() const;
 	Mode mode() const;
 
+	//Setters:
 	void setMode(const Mode&);
+
 	void print(bool isAdmin) const;
 
+	//Work with files:
 	void writeToBinary(std::ofstream& os) const;
 	void readFromBinary(std::ifstream& is);
 private:
+	//returns if given nickname is unique:
 	bool isUnique(const String& nickname) const;
-	
 
 };
 String getMode(const Mode& mode);

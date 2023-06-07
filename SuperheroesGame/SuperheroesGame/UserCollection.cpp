@@ -1,20 +1,54 @@
 #include "UserCollection.h"
+#include "Admin.h"
 
-UserCollection::UserCollection() : UserCollection(8) {}
-UserCollection::UserCollection(const UserCollection& other) : users(other.users.capacity()) {
+void UserCollection::copyFrom(const UserCollection& other) {
 	_size = other._size;
+	users.reserve(other.users.capacity());
 	for (size_t i = 0; i < _size; i++)
 	{
-		users[i] = other.users[i]->clone();
+		users.push_back(other.users[i]->clone());
 	}
 }
-
-UserCollection::UserCollection(size_t capacity) : users(capacity) {}
-UserCollection::~UserCollection() {
+void UserCollection::moveFrom(UserCollection&& other) {
+	_size = other._size;
+	users = std::move(other.users);
+	other.users.clear();
+	other._size = 0;
+}
+void UserCollection::free() {
 	for (size_t i = 0; i < _size; i++)
 	{
 		delete users[i];
 	}
+}
+
+UserCollection::UserCollection() : UserCollection(8) {}
+UserCollection::UserCollection(const UserCollection& other) : users(other.users.capacity()) {
+	copyFrom(other);
+}
+UserCollection& UserCollection::operator=(const UserCollection& other) {
+	if (this != &other)
+	{
+		free();
+		copyFrom(other);
+	}
+	return *this;
+}
+UserCollection::UserCollection(UserCollection&& other) {
+	moveFrom(std::move(other));
+}
+UserCollection& UserCollection::operator=(UserCollection&& other) {
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
+	}
+	return *this;
+}
+
+UserCollection::UserCollection(size_t capacity) : users(capacity) {}
+UserCollection::~UserCollection() {
+	free();
 } 
 
 size_t UserCollection::add(bool isAdmin) {

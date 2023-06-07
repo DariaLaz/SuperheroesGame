@@ -35,7 +35,7 @@ public:
 	int findHero(const String& username) const;
 
 	//Print the player
-	void print() const override;
+	void print(bool isAdmin) const override;
 
 	//Change mode of given superhero
 	void changeMode(const String& nickname, const Mode& mode);
@@ -45,7 +45,7 @@ public:
 	//Add new superhero to the collection
 	void addSuperhero(Superhero* superhero); 
 
-	//Decrease mmoney
+	//Decrease money
 	void loseMoney(double money);
 	//Increase money
 	void winMoney(double money);
@@ -57,7 +57,9 @@ public:
 	void writeToBinary(std::ofstream& os) const override; //write player in binary file
 	void readFromBinary(std::ifstream& is) override; //read player from binary file
 
+	//returns co[y of the current object
 	User* clone() const override;
+
 	bool isAdmin() const override;
 };
 

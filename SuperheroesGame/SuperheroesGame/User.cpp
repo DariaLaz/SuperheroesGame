@@ -154,12 +154,3 @@ bool isValidPass(const char* password) {
 bool isValidPass(const String& password) {
 	return isValidPass(password.c_str());
 }
-bool isUpperCase(char ch) {
-	return ch >= 'A' && ch <= 'Z';
-}
-bool isDownCase(char ch) {
-	return ch >= 'a' && ch <= 'z';
-}
-bool isDigit(char ch) {
-	return ch >= '0' && ch <= '9';
-}

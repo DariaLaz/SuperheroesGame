@@ -1,4 +1,8 @@
 #include "System.h"
+#include "Admin.h"
+const User* System::userWith(const String& username) const {
+	return users[users.find(username)];
+}
 System* System::system = nullptr;
 System& System::getInstance() {
 	if (system == nullptr)
@@ -27,7 +31,7 @@ void System::giveMoney() {
 
 
 System::System() {
-	std::ifstream ifs(FileConstants::FILE_NAME, std::ios::in | std::ios::binary);
+	std::ifstream ifs(FileConstants::SYS_FILE_NAME, std::ios::in | std::ios::binary);
 	if (!ifs.is_open())
 		throw std::logic_error("Can not open the file!");
 
@@ -105,7 +109,7 @@ void System::printInfo(const String& nickname) const {
 		throw std::out_of_range("Invalid nickname!");
 
 	}
-	users[idx]->print();
+	users[idx]->print(isAdmin());
 }
 
 //Всеки администратор трябва да може да добавя нови супергерои към “пазара”. В случай, че на “пазара” няма никакви супергерои, администраторът още с влизането си трябва да добави поне 3 супергероя. Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, ако не желае да добавя нов.
@@ -165,7 +169,7 @@ void System::printUsers() const {
 	{
 		if (!users[i]->isAdmin() || current->isAdmin())
 		{
-			users[i]->print();
+			users[i]->print(current->isAdmin());
 		}
 	}
 } 
@@ -191,7 +195,7 @@ void System::results() {
 	}
 	for (size_t i = 0; i < size; i++)
 	{
-		players[i]->print();
+		players[i]->print(isAdmin());
 	}
 }
 //Администраторът трябва да може да вижда всички супергерои, които са били продадени и да може да избере един от тях за добавяне, 
@@ -413,7 +417,7 @@ void System::playerCheck() const {
 	}
 }
 
-int System::comparePower(const Power& pow1, const Power& pow2) const {
+int comparePower(const Power& pow1, const Power& pow2) {
 	if ((pow1 == Power::fire && pow2 == Power::earth)
 		|| (pow1 == Power::earth && pow2 == Power::water)
 		|| (pow1 == Power::water && pow2 == Power::fire))

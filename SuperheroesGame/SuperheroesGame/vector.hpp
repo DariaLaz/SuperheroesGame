@@ -35,7 +35,7 @@ public:
 	//Test whether vector is empty
 	bool empty() const;
 	//Request a change in capacity
-	bool reserve(size_t capacity);
+	void reserve(size_t capacity);
 	//Shrink to fit
 	void shrink_to_fit();
 
@@ -183,7 +183,7 @@ template<typename T> size_t vector<T>::capacity() const {
 template<typename T> bool vector<T>::empty() const {
 	return _size == 0;
 }
-template<typename T> bool vector<T>::reserve(size_t capacity) {
+template<typename T> void vector<T>::reserve(size_t capacity) {
 	resize(capacity);
 }
 template<typename T> void vector<T>::shrink_to_fit() {

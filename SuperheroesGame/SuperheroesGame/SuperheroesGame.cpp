@@ -8,6 +8,7 @@ int main()
 	SuperHeroGame inf;
 
 	inf.run();
+
 }
 
 //admin

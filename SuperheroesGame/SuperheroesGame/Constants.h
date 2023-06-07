@@ -8,7 +8,8 @@ namespace VectorConstants {
 	const int DEF_CAPACITY = 16; 
 }
 namespace FileConstants {
-	const char FILE_NAME[8] = "sys.dat";
+	const char SYS_FILE_NAME[8] = "sys.dat";
+	const char GAME_FILE_NAME[9] = "game.dat";
 }
 
 namespace GameConstants {

@@ -1,6 +1,7 @@
 #pragma once
 #include "String.h"
 #include "vector.hpp"
+#include "Helpers.h"
 
 class User
 {
@@ -26,7 +27,7 @@ public:
 		String&& lastName,
 		String&& password,
 		String&& nickname);
-
+	virtual ~User() = default;
 	//Getters
 	const String& firstName() const;
 	const String& lastName() const;
@@ -36,7 +37,7 @@ public:
 	bool isPass(const String& pass) const;
 
 	//Print user
-	virtual void print() const = 0;
+	virtual void print(bool isAdmin) const = 0;
 
 	//Write user in binary file
 	virtual void writeToBinary(std::ofstream& os) const;
@@ -54,15 +55,8 @@ private:
 	void setUsername(const char* name);
 	void setUsername(const String& name);
 	void setUsername(String&& name);
-
-
 };
 //Checks if the password is valid (contains at least one lowercase letter, uppercase letter and digit)
 bool isValidPass(const char* password);
 bool isValidPass(const String& password);
-//Checks if the given char is uppercase
-bool isUpperCase(char ch);
-//Checks if the given char is lowercase
-bool isDownCase(char ch);
-//Checks if the given char is digit
-bool isDigit(char ch);
+
