@@ -81,7 +81,7 @@ void System::addUser(const String& firstName,
 	}
 	else
 	{
-		user = new Player(firstName, lastName, username, password);
+		user = new Player(firstName, lastName, password, username);
 	}
 	users.add(user);
 }
@@ -457,14 +457,14 @@ void System::readFromBinary(std::ifstream& is) {
 
 		if (isAdmin)
 		{
-			Admin admin;
-			admin.readFromBinary(is);
-			addUser(std::move(admin));
+			Admin* admin = new Admin;
+			admin->readFromBinary(is);
+			users.add(admin);
 		}
 		else
 		{
-			Player player;
-			player.readFromBinary(is);
+			Player* player = new Player;
+			player->readFromBinary(is);
 
 			size_t superheroesSize = 0;
 			is.read((char*)&superheroesSize, sizeof(size_t));
@@ -474,9 +474,9 @@ void System::readFromBinary(std::ifstream& is) {
 				currentNickname.readFromBinary(is);
 
 				int idx = findSuperhero(currentNickname);
-				player.addSuperhero(&market[idx]);
+				player->addSuperhero(&market[idx]);
 			}
-			addUser(std::move(player));
+			users.add(player);
 		}
 	}
 }
@@ -503,4 +503,8 @@ vector<Player*>& System::players() const {
 		}
 	}
 	return result;
+}
+
+void System::profile() const {
+	current->print(true);
 }

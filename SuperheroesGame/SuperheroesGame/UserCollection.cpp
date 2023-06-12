@@ -90,7 +90,8 @@ void UserCollection::writeToBinary(std::ofstream& os) const {
 	os.write((const char*)&_size, sizeof(size_t));
 	for (size_t i = 0; i < _size; i++)
 	{
-		os.write((const char*)users[i]->isAdmin(), sizeof(bool));
+		bool isAdmin = users[i]->isAdmin();
+		os.write((const char*)&isAdmin, sizeof(bool));
 		users[i]->writeToBinary(os);
 	}
 }

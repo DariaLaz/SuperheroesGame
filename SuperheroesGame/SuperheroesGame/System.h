@@ -19,11 +19,13 @@ public:
 	System& operator=(const System&) = delete;
 	System& getInstance();
 
-
 	//returns if there is logged in user
 	bool isLogged() const;
 	//give every player money
 	void giveMoney();
+
+	//see my profile
+	void profile() const;
 
 	//Getters:
 	const User* currentPlayer() const;
