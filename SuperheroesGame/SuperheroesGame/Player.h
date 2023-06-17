@@ -12,18 +12,15 @@ public:
 	Player(const String& firstName,
 		const String& lastName,
 		const String& password,
-		const String& nickname,
-		double money = GameConstants::START_MONEY);
+		const String& nickname);
 	Player(const char* firstName,
 		const char* lastName,
 		const char* password,
-		const char* nickname,
-		double money = GameConstants::START_MONEY);
+		const char* nickname);
 	Player(String&& firstName,
 		String&& lastName,
 		String&& password,
-		String&& nickname,
-		double money = GameConstants::START_MONEY);
+		String&& nickname);
 
 	//Getters:
 	double money() const; 

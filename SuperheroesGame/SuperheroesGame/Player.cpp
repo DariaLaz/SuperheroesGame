@@ -7,23 +7,20 @@ double Player::money() const {
 Player::Player(const String& firstName,
 	const String& lastName,
 	const String& password,
-	const String& nickname,
-	double money) :User(firstName, lastName, password, nickname) {
-	_money = money;
+	const String& nickname) :User(firstName, lastName, password, nickname) {
+	_money = GameConstants::START_MONEY;
 }
 Player::Player(const char* firstName,
 	const char* lastName,
 	const char* password,
-	const char* nickname,
-	double money) :User(firstName, lastName, password, nickname) {
-	_money = money;
+	const char* nickname) :User(firstName, lastName, password, nickname) {
+	_money = GameConstants::START_MONEY;
 }
 Player::Player(String&& firstName,
 	String&& lastName,
 	String&& password,
-	String&& nickname,
-	double money) :User(std::move(firstName), std::move(lastName), std::move(password), std::move(nickname)) {
-	_money = money;
+	String&& nickname) :User(std::move(firstName), std::move(lastName), std::move(password), std::move(nickname)) {
+	_money = GameConstants::START_MONEY;
 }
 
 int Player::findHero(const char* nickname) const {
@@ -55,11 +52,15 @@ size_t Player::superheroesCount() const {
 }
 
 void Player::print(bool isAdmin) const {
-	std::cout << "+++" << username() << " ($" << _money << ") " << "+++\n";
+	std::cout << "+++" << username() << "+++\n";
+	if (isAdmin)
+	{
+		std::cout << " ($" << _money << ") " << std::endl;
+	}
 	std::cout << " Superheroes: \n";
 	for (size_t i = 0; i < superheroes.size(); i++)
 	{
-		superheroes[i]->print(this->isAdmin());
+		superheroes[i]->print(isAdmin);
 	}
 }
 

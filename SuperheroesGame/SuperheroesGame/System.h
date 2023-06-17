@@ -43,11 +43,6 @@ public:
 				  const String& nickname,
 				  const String& password,
 				  bool isAdmin);
-	void addUser(String&& firstName,
-				  String&& lastName,
-				  String&& nickname,
-				  String&& password,
-				  bool isAdmin);
 	//delete player
 	void deletePlayer(const String& nickname); 
 	//prints info about user
@@ -101,7 +96,7 @@ public:
 	void writeToBinary(std::ofstream& os) const; //write in binary file
 	void readFromBinary(std::ifstream& is); // read from binary file
 	size_t marketSize() const;
-	vector<Player*>& players() const;
+	vector<Player*> players();
 	//returns the user with this username
 	const User* userWith(const String& username) const;
 private:

@@ -95,6 +95,12 @@ void System::deletePlayer(const String& nickname) {
 	{
 		throw std::out_of_range("Invalid nickname!");
 	}
+	Player* current = static_cast<Player*>(users[idx]);
+	size_t count = current->superheroesCount();
+	for (size_t i = 0; i < count; i++)
+	{
+		current->changeMode(current->getHeroAt(i), Mode::notBought);
+	}
 	deleteUserAt(idx);
 }
 
@@ -241,18 +247,16 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 	Player& attacker = *((Player*)current);
 	Player* defender = nullptr;
 	
-	vector<Player*>& players = this->players();
+	vector<Player*> players = this->players();
 
-	if (userNickname == nullptr)
+	if (userNickname == "")
 	{
-		size_t superheroIdx = findSuperhero(heroNickname);
+		int superheroIdx = findSuperhero(heroNickname);
 		if (superheroIdx == -1)
 			throw std::out_of_range("Invalid nickname!");
 
 		if (market[superheroIdx].mode() == Mode::notBought || market[superheroIdx].mode() == Mode::dead)
 			throw std::logic_error("Invalid nickname!");
-
-		vector<Player*>& players = this->players();
 
 		defender = getSuperheroOwner(superheroIdx, players);
 
@@ -266,10 +270,15 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		{
 			throw std::out_of_range("Invalid username!");
 		}
-		defender = players[idx];
+		defender = static_cast<Player*>(users[idx]);
 	}
 
 	Superhero& attackHero = *attacker.getHeroAt(attacker.findHero(nickname));
+
+	if (attackHero.mode() != Mode::attack)
+	{
+		throw std::invalid_argument("Your hero should be in attack mode");
+	}
 
 	if (defender->superheroesCount() == 0)
 	{
@@ -282,12 +291,15 @@ int System::attack(const String& nickname, const String& userNickname, const Str
 		return win;
 	}
 	Superhero* defendHero = nullptr;
-	if (heroNickname == nullptr)
+	if (heroNickname == "")
 	{
 		defendHero = defender->getHeroAt(rand() % defender->superheroesCount());
 	}
-	defendHero = defender->getHeroAt(defender->findHero(heroNickname));
-
+	else
+	{
+		defendHero = defender->getHeroAt(defender->findHero(heroNickname));
+	}
+	
 	size_t attackerPoints = attackHero.strenght();
 	size_t defenderPoints = defendHero->strenght();
 	//Ако нападащият играч е с доминиращ тип сила, то точките на супергероя му в тази битка биват удвоени
@@ -373,6 +385,7 @@ bool System::isAdmin() const {
 }
 
 void System::deleteUserAt(size_t idx) {
+	
 	users.removeAt(idx);
 }
 int System::findSuperhero(const String& nickname) const {
@@ -493,13 +506,13 @@ size_t System::marketSize() const {
 	return market.size();
 }
 
-vector<Player*>& System::players() const {
+vector<Player*> System::players() {
 	vector<Player*> result;
 	for (size_t i = 0; i < users.size(); i++)
 	{
 		if (users[i]->isAdmin() == false)
 		{
-			result.push_back((Player*)users[i]);
+			result.push_back(static_cast<Player*>(users[i]));
 		}
 	}
 	return result;

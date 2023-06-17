@@ -46,7 +46,7 @@ void SuperHeroGame::run() {
 }
 
 void SuperHeroGame::menu() {
-	std::cout << "+----------------+" << std::endl;
+	std::cout << std::endl << "+----------------+" << std::endl;
 	if (_system->isAdmin())
 	{
 		std::cout <<"|  ADMIN MENU:   |" << std::endl
@@ -78,6 +78,7 @@ void SuperHeroGame::menu() {
 	std::cout << "|PERSONAL        |" << std::endl
 			  << "| --DeleteMe     |" << std::endl
 			  << "|Logout          |" << std::endl
+			  << "|Profile         |" << std::endl
 			  << "|Exit            |" << std::endl
 			  << "+----------------+" << std::endl;
 }
@@ -123,8 +124,17 @@ void SuperHeroGame::login() {
 void SuperHeroGame::logout() {
 	_system->logout();
 	std::cout << "You successfully logged out " << std::endl;
+	this->actions = 0;
+}
+void SuperHeroGame::increaseActions() {
+	if (actions >= 3)
+	{
+		throw std::exception("You are out of moves.");
+	}
+	actions++;
 }
 bool SuperHeroGame::command() {
+	
 	String command;
 	std::cout << "Enter command: ";
 	std::cin >> command;
@@ -176,19 +186,30 @@ bool SuperHeroGame::command() {
 	}
 	else if (command == "Buy")
 	{
+		increaseActions();
 		buy();
 	}
 	else if (command == "AttackUser")
 	{
+		increaseActions();
+
 		attackUser();
 	}
 	else if (command == "AttackHero")
 	{
+		increaseActions();
+
 		attackHero();
 	}
 	else if (command == "Mode")
 	{
+		increaseActions();
+
 		changeMode();
+	}
+	else if (command == "Profile")
+	{
+		profile();
 	}
 	else if (command == "Exit")
 	{

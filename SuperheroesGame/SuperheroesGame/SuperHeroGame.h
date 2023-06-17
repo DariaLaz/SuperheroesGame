@@ -6,11 +6,13 @@ class SuperHeroGame {
 
 	vector<const User*> currentTurnPlayers;
 	size_t turnsCounter = 0;
+
+	size_t actions = 0;
 public:
 	SuperHeroGame();
 	void run();
-
 private:
+	void increaseActions();
 	//Turns manager
 	bool isNewTurn() const;
 	void addCurrentPlayer();
